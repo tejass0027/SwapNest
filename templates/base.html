@@ -6,10 +6,19 @@
     <title>{% block title %}{{ site_name }}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
+<body{% block body_class %}{% endblock %}>
     <header class="site-header">
         <nav class="nav-bar container">
             <a href="{{ url_for('index') }}" class="logo">{{ site_name }}</a>
+
+            <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+
             <div class="nav-links">
                 {% if current_user %}
                     <span class="nav-greeting">{{ current_user.name }}</span>
@@ -24,10 +33,10 @@
         </nav>
     </header>
 
-    <main class="container main-content">
+    <main class="{% block main_class %}container main-content{% endblock %}">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-messages">
+                <div class="flash-messages{% block flash_class %}{% endblock %}">
                     {% for category, message in messages %}
                         <div class="flash flash-{{ category }}">{{ message }}</div>
                     {% endfor %}
@@ -46,5 +55,18 @@
             {% endif %}
         </div>
     </footer>
+
+    <script>
+    (function() {
+        var toggle = document.querySelector('.nav-toggle');
+        var links = document.querySelector('.nav-links');
+        if (toggle && links) {
+            toggle.addEventListener('click', function() {
+                var open = links.classList.toggle('is-open');
+                toggle.setAttribute('aria-expanded', open);
+            });
+        }
+    })();
+    </script>
 </body>
 </html>
