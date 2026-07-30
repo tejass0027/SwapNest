@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>Buy and sell digital assets</h1>
+    <p class="hero-subtitle">
+        SaaS products, apps, websites, domains, templates, and services
+        {% if social_accounts_enabled %}&mdash; plus social media accounts{% endif %}.
+    </p>
+    <div class="hero-actions">
+        {% if current_user %}
+            <a href="#" class="btn btn-primary">List your asset</a>
+        {% else %}
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get started</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Log in</a>
+        {% endif %}
+    </div>
+</div>
+
+<section class="home-section">
+    <h2>How it works</h2>
+    <div class="steps-grid">
+        <div class="step-card">
+            <span class="step-number">1</span>
+            <h3>List your asset</h3>
+            <p>Describe what you're selling, set a price, and publish. Social media accounts go through a quick review first.</p>
+        </div>
+        <div class="step-card">
+            <span class="step-number">2</span>
+            <h3>Buyer pays securely</h3>
+            <p>Payments go through Stripe Checkout — card details never touch our server.</p>
+        </div>
+        <div class="step-card">
+            <span class="step-number">3</span>
+            <h3>Transfer the asset</h3>
+            <p>Hand over source code, credentials, or account access using the delivery method you chose.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_name }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <nav class="nav-bar container">
+            <a href="{{ url_for('index') }}" class="logo">{{ site_name }}</a>
+            <div class="nav-links">
+                {% if current_user %}
+                    <span class="nav-greeting">{{ current_user.name }}</span>
+                    <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
+                        <button type="submit" class="btn btn-ghost">Log out</button>
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-ghost">Log in</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Sign up</a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="container main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; 2026 {{ site_name }}</p>
+            {% if demo_mode %}
+                <span class="badge badge-demo">Demo mode</span>
+            {% endif %}
+        </div>
+    </footer>
+</body>
+</html>
