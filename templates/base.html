@@ -25,8 +25,12 @@
             <div class="nav-links">
                 <a href="{{ url_for('listings.browse') }}" class="nav-link">Browse</a>
                 {% if current_user %}
+                    <a href="{{ url_for('dashboard.index') }}" class="nav-link">Dashboard</a>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin.index') }}" class="nav-link">Admin</a>
+                    {% endif %}
                     <a href="{{ url_for('listings.new') }}" class="btn btn-primary">Sell an asset</a>
-                    <span class="nav-greeting">{{ current_user.name }}</span>
+                    <a href="{{ url_for('dashboard.profile') }}" class="nav-greeting">{{ current_user.name }}</a>
                     <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
                         <button type="submit" class="btn btn-ghost">Log out</button>
                     </form>

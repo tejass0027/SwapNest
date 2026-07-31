@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Admin — {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1 class="dash-title">Admin</h1>
+
+{# ── Stats ───────────────────────────────────────────────────── #}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-value mono">{{ stats.users }}</div>
+        <div class="stat-label label-upper">Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value mono">{{ stats.active_listings }}</div>
+        <div class="stat-label label-upper">Active listings</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value mono">{{ stats.orders }}</div>
+        <div class="stat-label label-upper">Paid orders</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value mono">${{ stats.volume_cents | usd }}</div>
+        <div class="stat-label label-upper">Order volume</div>
+    </div>
+</div>
+
+{# ── Review queue ────────────────────────────────────────────── #}
+<section class="dash-section">
+    <div class="dash-section-header">
+        <h2>Review queue</h2>
+        <span class="dash-section-count mono">{{ queue | length }} pending</span>
+    </div>
+
+    {% if queue %}
+    <div class="dash-table" role="table">
+        {% for l in queue %}
+        <div class="dash-row admin-row" role="row" data-category="{{ l.category_slug }}">
+            <span class="dash-row-swatch" aria-hidden="true">{{ l.category_icon }}</span>
+            <div class="dash-row-main">
+                <a href="{{ url_for('listings.detail', listing_id=l.id) }}" class="dash-row-title">{{ l.title }}</a>
+                <div class="dash-row-meta">{{ l.category_name }} &middot; {{ l.seller_name }}</div>
+            </div>
+            <span class="dash-row-price mono">${{ l.price_cents | usd }}</span>
+            <div class="dash-row-actions">
+                <form method="post" action="{{ url_for('admin.approve', listing_id=l.id) }}" class="inline-form">
+                    <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.reject', listing_id=l.id) }}" class="inline-form"
+                      onsubmit="return confirm('Reject and remove this listing?');">
+                    <button type="submit" class="btn btn-secondary btn-sm">Reject</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty dash-empty-quiet">
+        <p>Nothing to review right now. New social-account listings will appear here for approval.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

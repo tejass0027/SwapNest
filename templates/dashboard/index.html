@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="dash-header">
+    <h1 class="dash-title">Dashboard</h1>
+    <a href="{{ url_for('dashboard.profile') }}" class="btn btn-secondary">Edit profile</a>
+</div>
+
+{# ── My listings ─────────────────────────────────────────────── #}
+<section class="dash-section">
+    <div class="dash-section-header">
+        <h2>My listings</h2>
+        <a href="{{ url_for('listings.new') }}" class="dash-section-link">List an asset &rarr;</a>
+    </div>
+
+    {% if my_listings %}
+    <div class="dash-table" role="table">
+        {% for l in my_listings %}
+        <div class="dash-row" role="row" data-category="{{ l.category_slug }}">
+            <span class="dash-row-swatch" aria-hidden="true">{{ l.category_icon }}</span>
+            <div class="dash-row-main">
+                <a href="{{ url_for('listings.detail', listing_id=l.id) }}" class="dash-row-title">{{ l.title }}</a>
+                <div class="dash-row-meta">{{ l.category_name }}</div>
+            </div>
+            <span class="dash-row-price mono">${{ l.price_cents | usd }}</span>
+            <span class="badge badge-{{ 'active' if l.status == 'active' else 'pending' if l.status == 'pending_review' else 'sold' if l.status == 'sold' else 'removed' }}">
+                {{ l.status | replace('_', ' ') }}
+            </span>
+            <div class="dash-row-actions">
+                {% if l.status != 'sold' and l.status != 'removed' %}
+                    <a href="{{ url_for('listings.edit', listing_id=l.id) }}" class="btn btn-ghost btn-sm">Edit</a>
+                    <form method="post" action="{{ url_for('listings.remove', listing_id=l.id) }}" class="inline-form"
+                          onsubmit="return confirm('Remove this listing? Buyers will no longer see it.');">
+                        <button type="submit" class="btn btn-ghost btn-sm dash-remove">Remove</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty">
+        <p>You haven't listed anything yet.</p>
+        <a href="{{ url_for('listings.new') }}" class="btn btn-primary">List your first asset</a>
+    </div>
+    {% endif %}
+</section>
+
+{# ── Orders received (as seller) ─────────────────────────────── #}
+<section class="dash-section">
+    <div class="dash-section-header">
+        <h2>Orders received</h2>
+    </div>
+
+    {% if orders_received %}
+    <div class="dash-table" role="table">
+        {% for o in orders_received %}
+        <div class="dash-row" role="row">
+            <div class="dash-row-main">
+                <a href="{{ url_for('listings.detail', listing_id=o.listing_id) }}" class="dash-row-title">{{ o.listing_title }}</a>
+                <div class="dash-row-meta">Order #{{ '%06d' % o.id }} &middot; Buyer: {{ o.buyer_name }}</div>
+            </div>
+            <span class="dash-row-price mono">${{ o.amount_cents | usd }}</span>
+            <span class="badge badge-{{ 'active' if o.status in ('paid', 'completed') else 'sold' if o.status == 'cancelled' else 'pending' }}">
+                {{ o.status }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty dash-empty-quiet">
+        <p>No orders yet. When someone buys one of your listings, it'll show up here.</p>
+    </div>
+    {% endif %}
+</section>
+
+{# ── Orders placed (as buyer) ────────────────────────────────── #}
+<section class="dash-section">
+    <div class="dash-section-header">
+        <h2>Orders placed</h2>
+    </div>
+
+    {% if orders_placed %}
+    <div class="dash-table" role="table">
+        {% for o in orders_placed %}
+        <div class="dash-row dash-row-order" role="row">
+            <div class="dash-row-main">
+                <a href="{{ url_for('listings.detail', listing_id=o.listing_id) }}" class="dash-row-title">{{ o.listing_title }}</a>
+                <div class="dash-row-meta">Order #{{ '%06d' % o.id }} &middot; Seller: {{ o.seller_name }}</div>
+                {% if o.status in ('paid', 'completed') and o.delivery_method %}
+                    <div class="dash-row-delivery">
+                        <span class="label-upper">Delivery</span> {{ o.delivery_method }}
+                    </div>
+                {% endif %}
+            </div>
+            <span class="dash-row-price mono">${{ o.amount_cents | usd }}</span>
+            <span class="badge badge-{{ 'active' if o.status in ('paid', 'completed') else 'sold' if o.status == 'cancelled' else 'pending' }}">
+                {{ o.status }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty dash-empty-quiet">
+        <p>You haven't bought anything yet. <a href="{{ url_for('listings.browse') }}">Browse listings</a> to get started.</p>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

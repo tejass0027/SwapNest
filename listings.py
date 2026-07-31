@@ -304,6 +304,34 @@ def edit(listing_id):
     )
 
 
+# ── Remove ─────────────────────────────────────────────────────
+
+@bp.route("/listing/<int:listing_id>/remove", methods=("POST",))
+@login_required
+def remove(listing_id):
+    db = get_db()
+    listing = db.execute(
+        "SELECT id, seller_id, status FROM listings WHERE id = ?", (listing_id,)
+    ).fetchone()
+
+    if listing is None:
+        abort(404)
+    # server-side ownership check — never trust the client
+    if listing["seller_id"] != g.user["id"]:
+        abort(403)
+
+    if listing["status"] == "sold":
+        flash("Sold listings can't be removed.", "error")
+        return redirect(url_for("dashboard.index"))
+
+    db.execute(
+        "UPDATE listings SET status = 'removed' WHERE id = ?", (listing_id,)
+    )
+    db.commit()
+    flash("Listing removed.", "success")
+    return redirect(url_for("dashboard.index"))
+
+
 # ── Shared create/edit save ────────────────────────────────────
 
 def _save_listing(existing, categories):
