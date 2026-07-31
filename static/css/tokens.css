@@ -1,0 +1,90 @@
+/* ═══════════════════════════════════════════════════════════════
+   Ledger — Design Tokens (dark luxury)
+   Deep charcoal-blue base, one champagne-gold accent, quiet
+   per-category tints. Every value used elsewhere lives here.
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+    /* ── Surfaces (never pure black) ───────────────────────── */
+    --bg:         #0C0D12;   /* page */
+    --surface-1:  #131521;   /* hero, auth panel, raised sections */
+    --surface-2:  #191B27;   /* cards */
+    --surface-3:  #21232F;   /* inputs, swatches */
+    --line:       rgba(255, 255, 255, 0.08);   /* hairline */
+    --line-2:     rgba(255, 255, 255, 0.14);   /* stronger hairline */
+
+    /* ── Text ──────────────────────────────────────────────── */
+    --ink:        #F3F2F7;
+    --ink-muted:  #ACAAB8;
+    --ink-dim:    #8B8996;
+    --on-accent:  #0C0D12;   /* text on gold */
+
+    /* ── The one accent: champagne gold ────────────────────── */
+    --gold:        #D8B87A;
+    --gold-bright: #E7CE9A;
+    --gold-dim:    #C4A362;
+    --gold-soft:   rgba(216, 184, 122, 0.14);
+    --gold-line:   rgba(216, 184, 122, 0.35);
+
+    /* ── Semantic (lightened for dark) ─────────────────────── */
+    --ok:          #57CFA6;  --ok-soft:     rgba(87, 207, 166, 0.15);
+    --warn:        #E3B15C;  --warn-soft:   rgba(227, 177, 92, 0.15);
+    --danger:      #E8705F;  --danger-soft: rgba(232, 112, 95, 0.15);
+    --info:        #6FB2F0;  --info-soft:   rgba(111, 178, 240, 0.15);
+
+    /* ── Per-category accent hues (readable on dark) ───────── */
+    --youtube:   #E9856A;  --instagram: #E7789F;  --tiktok:    #57CFA6;
+    --twitter:   #6FB2F0;  --facebook:  #6FB2F0;  --software:  #A9A2F0;
+    --apps:      #E3B15C;  --websites:  #6FB2F0;  --templates: #57CFA6;
+    --services:  #E7789F;
+
+    /* ── Type ──────────────────────────────────────────────── */
+    --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono:    'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+    --text-xs:   12px;
+    --text-sm:   14px;
+    --text-base: 16px;
+    --text-lg:   20px;
+    --text-xl:   30px;
+    --text-2xl:  44px;
+
+    /* ── Spacing (8px rhythm, 4px sub-steps) ───────────────── */
+    --sp-1:  4px;  --sp-2:  8px;  --sp-3:  12px; --sp-4:  16px;
+    --sp-5:  20px; --sp-6:  24px; --sp-8:  32px; --sp-10: 40px;
+    --sp-12: 48px; --sp-16: 64px; --sp-20: 80px;
+
+    /* ── Shape ─────────────────────────────────────────────── */
+    --radius-sm:   8px;
+    --radius:      14px;
+    --radius-pill: 999px;
+
+    /* ── Elevation (soft, layered) ─────────────────────────── */
+    --shadow-1:     0 1px 2px rgba(0, 0, 0, 0.40);
+    --shadow-2:     0 10px 30px rgba(0, 0, 0, 0.45);
+    --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.55);
+    --glow-gold:    0 10px 34px rgba(216, 184, 122, 0.16);
+
+    /* ── Layout ────────────────────────────────────────────── */
+    --max-width:    1180px;
+    --side-padding: 24px;
+
+    /* ── Motion (decelerating, never linear/bouncy) ────────── */
+    --ease-out:  cubic-bezier(0.22, 0.61, 0.36, 1);
+    --ease-soft: cubic-bezier(0.16, 1, 0.30, 1);
+    --dur-fast:  180ms;
+    --dur-mid:   240ms;
+    --dur-slow:  800ms;
+}
+
+/* ── Category → --cat hue mapping ──────────────────────────── */
+[data-category="youtube-channels"]       { --cat: var(--youtube); }
+[data-category="instagram-accounts"]     { --cat: var(--instagram); }
+[data-category="tiktok-accounts"]        { --cat: var(--tiktok); }
+[data-category="x-twitter-accounts"]     { --cat: var(--twitter); }
+[data-category="facebook-pages"]         { --cat: var(--facebook); }
+[data-category="software-saas"]          { --cat: var(--software); }
+[data-category="mobile-apps"]            { --cat: var(--apps); }
+[data-category="websites-domains"]       { --cat: var(--websites); }
+[data-category="templates-source-code"]  { --cat: var(--templates); }
+[data-category="digital-services"]       { --cat: var(--services); }
