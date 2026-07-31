@@ -7,11 +7,12 @@
 
 /* ── Tokens ────────────────────────────────────────────────── */
 :root {
-    /* Brand */
-    --brand:        #1976D2;
-    --brand-bright: #2E86D4;
-    --brand-dark:   #145AA0;
-    --brand-soft:   #E7F1FC;
+    /* Brand — pale sky blue surfaces, navy text, saturated blue for links/focus */
+    --brand:        #9FCDF2;   /* main surfaces: hero, buttons, logo, auth panel */
+    --brand-bright: #7FBBEC;   /* hover on pale surfaces */
+    --brand-deep:   #1C6FBF;   /* readable-on-white: links, focus rings, active pill */
+    --brand-dark:   #0C3C68;   /* navy text on pale brand surfaces */
+    --brand-soft:   #EAF4FD;   /* soft tint: focus halo, badges */
 
     /* Category palette — solid / dark / soft */
     --youtube:        #D85A30;  --youtube-dark:   #993C1D;  --youtube-soft:   #FAECE7;
@@ -98,11 +99,11 @@ body {
 
 img { max-width: 100%; display: block; }
 
-a { color: var(--brand); text-decoration: none; }
+a { color: var(--brand-deep); text-decoration: none; }
 a:hover { color: var(--brand-dark); }
 
 :focus-visible {
-    outline: 2px solid var(--brand);
+    outline: 2px solid var(--brand-deep);
     outline-offset: 2px;
     border-radius: 2px;
 }
@@ -172,7 +173,7 @@ a:hover { color: var(--brand-dark); }
     height: 30px;
     border-radius: 8px;
     background: var(--brand);
-    color: #fff;
+    color: var(--brand-dark);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -234,7 +235,7 @@ a:hover { color: var(--brand-dark); }
     text-decoration: none;
 }
 
-.btn-primary   { background: var(--brand); color: #fff; }
+.btn-primary   { background: var(--brand); color: var(--brand-dark); }
 .btn-secondary { background: var(--paper); color: var(--ink); border-color: var(--line); }
 .btn-ghost     { background: transparent; color: var(--ink-muted); border: none; }
 .btn-danger    { background: var(--danger); color: #fff; }
@@ -243,13 +244,13 @@ a:hover { color: var(--brand-dark); }
 @media (prefers-reduced-motion: no-preference) {
     a { transition: color var(--ease); }
     .btn { transition: background var(--ease), color var(--ease), border-color var(--ease), transform var(--ease); }
-    .btn-primary:hover   { background: var(--brand-dark); }
+    .btn-primary:hover   { background: var(--brand-bright); }
     .btn-secondary:hover { border-color: var(--ink-muted); }
     .btn-ghost:hover     { color: var(--ink); }
     .btn-danger:hover    { background: #A02E25; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .btn-primary:hover   { background: var(--brand-dark); }
+    .btn-primary:hover   { background: var(--brand-bright); }
     .btn-secondary:hover { border-color: var(--ink-muted); }
     .btn-ghost:hover     { color: var(--ink); }
 }
@@ -301,7 +302,7 @@ a:hover { color: var(--brand-dark); }
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: var(--brand);
+    border-color: var(--brand-deep);
     box-shadow: 0 0 0 3px var(--brand-soft);
 }
 
@@ -328,7 +329,7 @@ a:hover { color: var(--brand-dark); }
     height: 20px;
     flex-shrink: 0;
     margin-top: 2px;
-    accent-color: var(--brand);
+    accent-color: var(--brand-deep);
 }
 
 .form-check label {
@@ -363,7 +364,7 @@ a:hover { color: var(--brand-dark); }
    ═══════════════════════════════════════════════════════════════ */
 .hero {
     background: var(--brand);
-    color: #fff;
+    color: var(--brand-dark);
     border-radius: var(--radius);
     padding: var(--sp-12);
     text-align: center;
@@ -376,13 +377,14 @@ a:hover { color: var(--brand-dark); }
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.02em;
-    color: #fff;
+    color: var(--brand-dark);
     margin-bottom: var(--sp-4);
 }
 
 .hero-subtitle {
     font-size: var(--text-base);
-    color: var(--brand-soft);
+    color: var(--brand-dark);
+    opacity: 0.8;
     max-width: 580px;
     margin: 0 auto var(--sp-8);
     line-height: 1.55;
@@ -402,7 +404,7 @@ a:hover { color: var(--brand-dark); }
 .hero-actions .btn-primary:hover { background: var(--brand-soft); }
 
 .hero-actions .btn-secondary {
-    background: var(--brand-bright);
+    background: var(--brand-deep);
     color: #fff;
     border-color: transparent;
 }
@@ -436,7 +438,7 @@ a:hover { color: var(--brand-dark); }
 .home-section-link {
     font-size: var(--text-sm);
     font-weight: 500;
-    color: var(--brand);
+    color: var(--brand-deep);
 }
 .home-section-link:hover { color: var(--brand-dark); }
 
@@ -506,7 +508,7 @@ a:hover { color: var(--brand-dark); }
 
 /* Top colour block */
 .listing-card-top {
-    background: var(--cat, var(--brand));
+    background: var(--cat, var(--brand-deep));
     color: #fff;
     padding: var(--sp-5);
     display: flex;
@@ -653,7 +655,7 @@ a:hover { color: var(--brand-dark); }
 .chip:hover { border-color: var(--ink-muted); color: var(--ink); }
 
 .chip.is-active {
-    background: var(--cat, var(--brand));
+    background: var(--cat, var(--brand-deep));
     color: #fff;
     border-color: transparent;
 }
@@ -715,7 +717,7 @@ a:hover { color: var(--brand-dark); }
     margin-bottom: var(--sp-6);
 }
 .breadcrumb a { color: var(--ink-muted); }
-.breadcrumb a:hover { color: var(--brand); }
+.breadcrumb a:hover { color: var(--brand-deep); }
 .breadcrumb-sep { margin: 0 var(--sp-2); color: var(--line); }
 
 .detail-layout {
@@ -726,7 +728,7 @@ a:hover { color: var(--brand-dark); }
 }
 
 .detail-hero {
-    background: var(--cat, var(--brand));
+    background: var(--cat, var(--brand-deep));
     border-radius: var(--radius);
     aspect-ratio: 16 / 9;
     overflow: hidden;
@@ -843,7 +845,7 @@ a:hover { color: var(--brand-dark); }
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: var(--brand);
+    background: var(--brand-deep);
     color: #fff;
     font-size: 12px;
 }
@@ -997,7 +999,7 @@ a:hover { color: var(--brand-dark); }
 
 .auth-panel {
     background: var(--brand);
-    color: #fff;
+    color: var(--brand-dark);
     padding: var(--sp-16) var(--sp-12);
     display: flex;
     flex-direction: column;
@@ -1011,20 +1013,20 @@ a:hover { color: var(--brand-dark); }
     font-family: var(--font-display);
     font-size: var(--text-lg);
     font-weight: 600;
-    color: #fff;
+    color: var(--brand-dark);
     margin-bottom: var(--sp-12);
 }
 
 .auth-panel-logo .logo-mark {
-    background: #fff;
-    color: var(--brand);
+    background: var(--brand-dark);
+    color: #fff;
 }
 
 .auth-panel h2 {
     font-family: var(--font-display);
     font-size: var(--text-2xl);
     font-weight: 700;
-    color: #fff;
+    color: var(--brand-dark);
     line-height: 1.1;
     letter-spacing: -0.02em;
     margin-bottom: var(--sp-4);
@@ -1033,7 +1035,8 @@ a:hover { color: var(--brand-dark); }
 
 .auth-panel-text {
     font-size: var(--text-base);
-    color: var(--brand-soft);
+    color: var(--brand-dark);
+    opacity: 0.8;
     max-width: 440px;
     line-height: 1.55;
 }
