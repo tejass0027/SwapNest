@@ -8,10 +8,10 @@
 /* ── Tokens ────────────────────────────────────────────────── */
 :root {
     /* Brand */
-    --brand:        #534AB7;
-    --brand-bright: #7F77DD;
-    --brand-dark:   #3C3489;
-    --brand-soft:   #EEEDFE;
+    --brand:        #1976D2;
+    --brand-bright: #2E86D4;
+    --brand-dark:   #145AA0;
+    --brand-soft:   #E7F1FC;
 
     /* Category palette — solid / dark / soft */
     --youtube:        #D85A30;  --youtube-dark:   #993C1D;  --youtube-soft:   #FAECE7;
