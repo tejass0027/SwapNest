@@ -24,7 +24,7 @@ def admin_required(view):
             return redirect(url_for("auth.login", next=request.path))
         if not g.user["is_admin"]:
             flash("You don't have permission to access that page.", "error")
-            return redirect(url_for("index"))
+            return redirect(url_for("listings.home"))
         return view(**kwargs)
     return wrapped
 

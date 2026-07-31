@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Browse listings — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="browse-header">
+    <h1>
+        {% if active_category %}
+            {{ active_category.icon }} {{ active_category.name }}
+        {% elif f_group == 'social_account' %}
+            Social media accounts
+        {% elif f_group == 'digital' %}
+            Digital assets
+        {% elif f_q %}
+            Search results for "{{ f_q }}"
+        {% else %}
+            Browse all listings
+        {% endif %}
+    </h1>
+    <p class="browse-count mono">{{ count }} {{ "listing" if count == 1 else "listings" }}</p>
+</div>
+
+<div class="browse-layout">
+    {# ── Sidebar filters ──────────────────────────────────────── #}
+    <aside class="browse-sidebar">
+        <form method="get" action="{{ url_for('listings.browse') }}" class="filter-form">
+            <div class="form-group">
+                <label for="q">Search</label>
+                <input type="text" id="q" name="q" value="{{ f_q }}" placeholder="Search title or description">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="">All categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.slug }}" {% if f_category == cat.slug %}selected{% endif %}>
+                            {{ cat.icon }} {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if social_accounts_enabled %}
+            <div class="form-group">
+                <label for="group">Type</label>
+                <select id="group" name="group">
+                    <option value="">All types</option>
+                    <option value="digital" {% if f_group == 'digital' %}selected{% endif %}>Digital assets</option>
+                    <option value="social_account" {% if f_group == 'social_account' %}selected{% endif %}>Social accounts</option>
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="filter-row">
+                <div class="form-group">
+                    <label for="price_min">Min price ($)</label>
+                    <input type="text" id="price_min" name="price_min" value="{{ f_price_min }}" placeholder="0" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label for="price_max">Max price ($)</label>
+                    <input type="text" id="price_max" name="price_max" value="{{ f_price_max }}" placeholder="Any" inputmode="decimal">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="sort">Sort by</label>
+                <select id="sort" name="sort">
+                    {% for key, (_, label) in sort_options.items() %}
+                        <option value="{{ key }}" {% if sort_key == key %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Apply filters</button>
+
+            {% if f_q or f_category or f_group or f_price_min or f_price_max %}
+                <a href="{{ url_for('listings.browse') }}" class="filter-clear">Clear all filters</a>
+            {% endif %}
+        </form>
+    </aside>
+
+    {# ── Listing grid ─────────────────────────────────────────── #}
+    <div class="browse-main">
+        {% if listings %}
+        <div class="listing-grid">
+            {% for l in listings %}
+            <a href="{{ url_for('listings.detail', listing_id=l.id) }}" class="listing-card">
+                <div class="listing-card-image">
+                    {% if l.image_url %}
+                        <img src="{{ l.image_url }}" alt="{{ l.title }}">
+                    {% else %}
+                        <span class="listing-card-icon">{{ l.category_icon }}</span>
+                    {% endif %}
+                </div>
+                <div class="listing-card-body">
+                    <div class="listing-card-category">{{ l.category_name }}</div>
+                    <div class="listing-card-title">{{ l.title }}</div>
+                </div>
+                <div class="listing-card-divider"></div>
+                <div class="listing-card-footer">
+                    <div class="listing-card-metric">
+                        {% if l.metric_value %}
+                            <div class="metric-value">{{ l.metric_value }}</div>
+                            <div class="metric-label">{{ l.metric_label }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="listing-card-price">${{ l.price_cents | usd }}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {# ── Pagination ───────────────────────────────────────── #}
+        {% if total_pages > 1 %}
+        <nav class="pagination" aria-label="Listing pages">
+            {% if page > 1 %}
+                <a href="{{ url_for('listings.browse', page=page-1, q=f_q, category=f_category, group=f_group, price_min=f_price_min, price_max=f_price_max, sort=sort_key) }}"
+                   class="btn btn-secondary">&larr; Previous</a>
+            {% endif %}
+            <span class="pagination-info mono">Page {{ page }} of {{ total_pages }}</span>
+            {% if page < total_pages %}
+                <a href="{{ url_for('listings.browse', page=page+1, q=f_q, category=f_category, group=f_group, price_min=f_price_min, price_max=f_price_max, sort=sort_key) }}"
+                   class="btn btn-secondary">Next &rarr;</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <p class="empty-state-heading">No listings match your filters</p>
+            <p class="empty-state-body">Try broadening your search or <a href="{{ url_for('listings.browse') }}">clear all filters</a>.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

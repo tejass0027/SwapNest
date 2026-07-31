@@ -13,6 +13,9 @@ def create_app():
     import auth
     app.register_blueprint(auth.bp)
 
+    import listings
+    app.register_blueprint(listings.bp)
+
     @app.before_request
     def load_logged_in_user():
         user_id = session.get("user_id")
@@ -35,10 +38,6 @@ def create_app():
     @app.template_filter("usd")
     def usd_filter(cents):
         return f"{cents / 100:,.2f}"
-
-    @app.route("/")
-    def index():
-        return render_template("home.html")
 
     return app
 

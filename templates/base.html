@@ -9,7 +9,7 @@
 <body{% block body_class %}{% endblock %}>
     <header class="site-header">
         <nav class="nav-bar container">
-            <a href="{{ url_for('index') }}" class="logo">{{ site_name }}</a>
+            <a href="{{ url_for('listings.home') }}" class="logo">{{ site_name }}</a>
 
             <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -20,7 +20,9 @@
             </button>
 
             <div class="nav-links">
+                <a href="{{ url_for('listings.browse') }}" class="nav-link">Browse</a>
                 {% if current_user %}
+                    <a href="#" class="btn btn-primary">Sell an asset</a>
                     <span class="nav-greeting">{{ current_user.name }}</span>
                     <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
                         <button type="submit" class="btn btn-ghost">Log out</button>

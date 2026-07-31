@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}{{ listing.title }} — {{ site_name }}{% endblock %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{{ url_for('listings.home') }}">Home</a>
+    <span class="breadcrumb-sep" aria-hidden="true">/</span>
+    <a href="{{ url_for('listings.browse', category=listing.category_slug) }}">{{ listing.category_name }}</a>
+    <span class="breadcrumb-sep" aria-hidden="true">/</span>
+    <span aria-current="page">{{ listing.title }}</span>
+</nav>
+
+<div class="detail-layout">
+    {# ── Main column ──────────────────────────────────────────── #}
+    <div class="detail-main">
+        {# Image #}
+        <div class="detail-image">
+            {% if listing.image_url %}
+                <img src="{{ listing.image_url }}" alt="{{ listing.title }}">
+            {% else %}
+                <span class="detail-image-icon">{{ listing.category_icon }}</span>
+            {% endif %}
+        </div>
+
+        {# Social account warning #}
+        {% if listing.category_grp == 'social_account' %}
+        <div class="detail-notice">
+            <strong>Important:</strong> Transferring ownership of social media accounts may violate the platform's terms of service. Accounts can be reclaimed or banned after transfer. Buyers should do their own due diligence before purchasing.
+        </div>
+        {% endif %}
+
+        <h1 class="detail-title">{{ listing.title }}</h1>
+
+        <div class="detail-meta">
+            <span class="badge badge-{{ 'active' if listing.status == 'active' else 'pending' if listing.status == 'pending_review' else 'sold' if listing.status == 'sold' else 'removed' }}">
+                {{ listing.status | replace('_', ' ') }}
+            </span>
+            <span class="detail-meta-item label-upper">{{ listing.category_name }}</span>
+            {% if listing.platform %}
+                <span class="detail-meta-item label-upper">{{ listing.platform }}</span>
+            {% endif %}
+        </div>
+
+        <div class="detail-description">
+            {{ listing.description }}
+        </div>
+
+        {# Key metrics row #}
+        {% if listing.metric_value or listing.delivery_method %}
+        <div class="detail-stats">
+            {% if listing.metric_value %}
+            <div class="detail-stat">
+                <div class="metric-value">{{ listing.metric_value }}</div>
+                <div class="metric-label">{{ listing.metric_label }}</div>
+            </div>
+            {% endif %}
+            {% if listing.delivery_method %}
+            <div class="detail-stat">
+                <div class="detail-stat-value">{{ listing.delivery_method }}</div>
+                <div class="metric-label">Delivery method</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    {# ── Sidebar ──────────────────────────────────────────────── #}
+    <aside class="detail-sidebar">
+        {# Price card #}
+        <div class="detail-price-card">
+            <div class="detail-price-label label-upper">Price</div>
+            <div class="detail-price mono">${{ listing.price_cents | usd }}</div>
+
+            {% if listing.status == 'active' %}
+                {% if current_user and current_user.id == listing.seller_id %}
+                    <p class="detail-price-note">This is your listing.</p>
+                {% elif current_user %}
+                    <form method="post" action="#">
+                        <button type="submit" class="btn btn-primary btn-full">Buy now</button>
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-full">Log in to buy</a>
+                {% endif %}
+            {% elif listing.status == 'pending_review' %}
+                <p class="detail-price-note">This listing is awaiting admin review.</p>
+            {% elif listing.status == 'sold' %}
+                <p class="detail-price-note">This listing has been sold.</p>
+            {% endif %}
+        </div>
+
+        {# Seller card #}
+        <div class="detail-seller-card">
+            <div class="label-upper">Seller</div>
+            <div class="detail-seller-name">
+                {{ listing.seller_name }}
+                {% if listing.seller_verified %}
+                    <span class="detail-verified" title="Verified seller">&#10003;</span>
+                {% endif %}
+            </div>
+            {% if listing.seller_bio %}
+                <p class="detail-seller-bio">{{ listing.seller_bio }}</p>
+            {% endif %}
+            <p class="detail-seller-since">Member since {{ listing.seller_since[:10] }}</p>
+        </div>
+    </aside>
+</div>
+{% endblock %}

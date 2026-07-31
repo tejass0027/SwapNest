@@ -14,7 +14,7 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 @bp.route("/register", methods=("GET", "POST"))
 def register():
     if g.user:
-        return redirect(url_for("index"))
+        return redirect(url_for("listings.home"))
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
@@ -49,7 +49,7 @@ def register():
         session.clear()
         session["user_id"] = cur.lastrowid
         flash("Welcome to Ledger! Your account has been created.", "success")
-        return redirect(url_for("index"))
+        return redirect(url_for("listings.home"))
 
     return render_template("auth/register.html")
 
@@ -57,7 +57,7 @@ def register():
 @bp.route("/login", methods=("GET", "POST"))
 def login():
     if g.user:
-        return redirect(url_for("index"))
+        return redirect(url_for("listings.home"))
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
@@ -77,7 +77,7 @@ def login():
         flash(f"Welcome back, {user['name']}!", "success")
 
         next_url = safe_redirect_url(request.args.get("next"))
-        return redirect(next_url or url_for("index"))
+        return redirect(next_url or url_for("listings.home"))
 
     return render_template("auth/login.html")
 
@@ -86,4 +86,4 @@ def login():
 def logout():
     session.clear()
     flash("You've been logged out.", "info")
-    return redirect(url_for("index"))
+    return redirect(url_for("listings.home"))
