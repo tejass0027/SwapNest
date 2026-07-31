@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Checkout cancelled — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="checkout-page">
+    <div class="checkout-result">
+        <h1 class="checkout-result-title">Checkout cancelled</h1>
+        <p class="checkout-result-text">
+            No payment was taken. The listing is still available if you'd like to try again.
+        </p>
+        <div class="checkout-result-actions">
+            <a href="{{ url_for('listings.detail', listing_id=order.listing_id) }}" class="btn btn-primary">Back to the listing</a>
+            <a href="{{ url_for('listings.browse') }}" class="btn btn-ghost">Keep browsing</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

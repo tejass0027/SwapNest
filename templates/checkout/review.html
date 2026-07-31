@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Checkout — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="checkout-page" data-category="{{ listing.category_slug }}">
+    <h1 class="checkout-title">Review your purchase</h1>
+
+    {% if demo_mode %}
+    <div class="checkout-demo-note">
+        <span class="badge badge-demo">Demo mode</span>
+        No payment provider is configured, so confirming completes the order instantly &mdash; no card is charged and no money moves.
+    </div>
+    {% endif %}
+
+    <div class="checkout-card">
+        <div class="checkout-item">
+            <span class="checkout-item-icon" aria-hidden="true">{{ listing.category_icon }}</span>
+            <div class="checkout-item-body">
+                <div class="checkout-item-category label-upper">{{ listing.category_name }}</div>
+                <div class="checkout-item-title">{{ listing.title }}</div>
+            </div>
+        </div>
+
+        <div class="checkout-breakdown">
+            <div class="checkout-row">
+                <span>Item price</span>
+                <span class="mono">${{ listing.price_cents | usd }}</span>
+            </div>
+            <div class="checkout-row checkout-row-muted">
+                <span>Platform fee ({{ fee_percent }}%)</span>
+                <span class="mono">&minus;${{ fee_cents | usd }}</span>
+            </div>
+            <div class="checkout-row checkout-row-muted">
+                <span>Seller receives</span>
+                <span class="mono">${{ payout_cents | usd }}</span>
+            </div>
+            <div class="checkout-row checkout-row-total">
+                <span>You pay</span>
+                <span class="mono checkout-total">${{ listing.price_cents | usd }}</span>
+            </div>
+        </div>
+
+        <form method="post" action="{{ url_for('checkout.start', listing_id=listing.id) }}">
+            <button type="submit" class="btn btn-primary btn-full">
+                {% if demo_mode %}Complete demo purchase{% else %}Continue to payment{% endif %}
+            </button>
+        </form>
+        <a href="{{ url_for('listings.detail', listing_id=listing.id) }}" class="checkout-back">Cancel and go back</a>
+    </div>
+</div>
+{% endblock %}

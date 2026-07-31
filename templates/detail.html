@@ -76,11 +76,9 @@
                 {% endif %}
             {% elif listing.status == 'active' %}
                 {% if current_user %}
-                    <form method="post" action="#">
-                        <button type="submit" class="btn btn-primary btn-full">Buy now</button>
-                    </form>
+                    <a href="{{ url_for('checkout.review', listing_id=listing.id) }}" class="btn btn-primary btn-full">Buy now</a>
                 {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-full">Log in to buy</a>
+                    <a href="{{ url_for('auth.login', next=url_for('checkout.review', listing_id=listing.id)) }}" class="btn btn-primary btn-full">Log in to buy</a>
                 {% endif %}
             {% elif listing.status == 'pending_review' %}
                 <p class="detail-price-note">This listing is awaiting admin review.</p>

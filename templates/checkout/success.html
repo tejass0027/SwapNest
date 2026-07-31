@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Order confirmed — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="checkout-page" data-category="{{ order.category_slug }}">
+    <div class="checkout-result">
+        <span class="checkout-result-icon" aria-hidden="true">&#10003;</span>
+        <h1 class="checkout-result-title">Order confirmed</h1>
+
+        {% if demo %}
+        <div class="checkout-demo-note checkout-demo-note-center">
+            <span class="badge badge-demo">Demo mode</span>
+            This was a simulated purchase &mdash; no card was charged and no money changed hands.
+        </div>
+        {% endif %}
+
+        <p class="checkout-result-text">
+            You bought <strong>{{ order.listing_title }}</strong> from {{ order.seller_name }}.
+        </p>
+
+        <div class="checkout-card checkout-card-tight">
+            <div class="checkout-row">
+                <span>Order</span>
+                <span class="mono">#{{ '%06d' % order.id }}</span>
+            </div>
+            <div class="checkout-row">
+                <span>Amount paid</span>
+                <span class="mono">${{ order.amount_cents | usd }}</span>
+            </div>
+            <div class="checkout-row">
+                <span>Status</span>
+                <span><span class="badge badge-active">{{ order.status }}</span></span>
+            </div>
+        </div>
+
+        <p class="checkout-result-hint">
+            The seller will be in touch to hand over the asset using the delivery method on the listing.
+        </p>
+
+        <div class="checkout-result-actions">
+            <a href="{{ url_for('listings.detail', listing_id=order.listing_id) }}" class="btn btn-secondary">View the listing</a>
+            <a href="{{ url_for('listings.browse') }}" class="btn btn-ghost">Keep browsing</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

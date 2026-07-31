@@ -26,6 +26,9 @@ def create_app():
     import listings
     app.register_blueprint(listings.bp)
 
+    import checkout
+    app.register_blueprint(checkout.bp)
+
     @app.before_request
     def load_logged_in_user():
         user_id = session.get("user_id")

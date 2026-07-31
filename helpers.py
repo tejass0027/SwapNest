@@ -29,6 +29,17 @@ def admin_required(view):
     return wrapped
 
 
+def fee_breakdown(price_cents, fee_percent):
+    """Split a price into the platform fee and the seller's payout.
+
+    All integer cents — the fee is floored so the platform never over-charges
+    by a rounding cent, and the payout takes the remainder.
+    """
+    fee_cents = price_cents * fee_percent // 100
+    payout_cents = price_cents - fee_cents
+    return fee_cents, payout_cents
+
+
 def safe_redirect_url(target):
     """Return *target* only if it is a safe, relative URL — block open redirects."""
     if not target:

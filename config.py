@@ -11,6 +11,8 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-me")
     DATABASE_PATH = os.environ.get("DATABASE_PATH", "./marketplace.db")
     STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+    STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
+    STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
     PLATFORM_FEE_PERCENT = int(os.environ.get("PLATFORM_FEE_PERCENT", "5"))
     ENABLE_SOCIAL_ACCOUNTS = _bool_env(os.environ.get("ENABLE_SOCIAL_ACCOUNTS"), True)
     SITE_NAME = os.environ.get("SITE_NAME", "Ledger")
