@@ -9,10 +9,13 @@
 <body{% block body_class %}{% endblock %}>
     <header class="site-header">
         <nav class="nav-bar container">
-            <a href="{{ url_for('listings.home') }}" class="logo">{{ site_name }}</a>
+            <a href="{{ url_for('listings.home') }}" class="logo">
+                <span class="logo-mark" aria-hidden="true">L</span>
+                <span>{{ site_name }}</span>
+            </a>
 
             <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                     <line x1="3" y1="6" x2="21" y2="6"/>
                     <line x1="3" y1="12" x2="21" y2="12"/>
                     <line x1="3" y1="18" x2="21" y2="18"/>
@@ -36,15 +39,17 @@
     </header>
 
     <main class="{% block main_class %}container main-content{% endblock %}">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages{% block flash_class %}{% endblock %}">
-                    {% for category, message in messages %}
-                        <div class="flash flash-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+        {% block flash %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+        {% endblock %}
 
         {% block content %}{% endblock %}
     </main>

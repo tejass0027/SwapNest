@@ -1,34 +1,55 @@
 {% extends "base.html" %}
 {% block title %}Log in — {{ site_name }}{% endblock %}
-{% block body_class %} class="auth-bg"{% endblock %}
-
 {% block main_class %}auth-page{% endblock %}
 
-{% block flash_class %} auth-flash{% endblock %}
+{# suppress the default flash — we render it inside the auth card #}
+{% block flash %}{% endblock %}
 
 {% block content %}
-<div class="auth-card">
-    <div class="auth-logo">{{ site_name }}</div>
-    <h1>Welcome back</h1>
-    <p class="auth-subtitle">Log in to manage your listings and orders.</p>
+<aside class="auth-panel" aria-hidden="true">
+    <div class="auth-panel-logo">
+        <span class="logo-mark">L</span>
+        <span>{{ site_name }}</span>
+    </div>
+    <h2>Where digital businesses change hands.</h2>
+    <p class="auth-panel-text">
+        A ledger of live SaaS, apps, websites, and creator accounts &mdash; buy or list your own in minutes.
+    </p>
+</aside>
 
-    <form method="post" class="auth-form" novalidate>
-        <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" id="email" name="email" required autofocus
-                   value="{{ email | default('', true) }}"
-                   placeholder="you@example.com">
-        </div>
+<div class="auth-form-side">
+    <div class="auth-card">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required
-                   placeholder="Your password">
-        </div>
+        <h1>Welcome back</h1>
+        <p class="auth-subtitle">Log in to manage your listings and orders.</p>
 
-        <button type="submit" class="btn btn-primary btn-full">Log in</button>
-    </form>
+        <form method="post" class="auth-form" novalidate>
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" required autofocus
+                       value="{{ email | default('', true) }}"
+                       placeholder="you@example.com">
+            </div>
 
-    <p class="auth-switch">New here? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required
+                       placeholder="Your password">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Log in</button>
+        </form>
+
+        <p class="auth-switch">New here? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
+    </div>
 </div>
 {% endblock %}

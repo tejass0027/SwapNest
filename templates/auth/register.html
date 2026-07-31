@@ -1,42 +1,62 @@
 {% extends "base.html" %}
 {% block title %}Create an account — {{ site_name }}{% endblock %}
-{% block body_class %} class="auth-bg"{% endblock %}
-
 {% block main_class %}auth-page{% endblock %}
 
-{% block flash_class %} auth-flash{% endblock %}
+{% block flash %}{% endblock %}
 
 {% block content %}
-<div class="auth-card">
-    <div class="auth-logo">{{ site_name }}</div>
-    <h1>Create your account</h1>
-    <p class="auth-subtitle">List and sell digital assets in minutes.</p>
+<aside class="auth-panel" aria-hidden="true">
+    <div class="auth-panel-logo">
+        <span class="logo-mark">L</span>
+        <span>{{ site_name }}</span>
+    </div>
+    <h2>Turn what you built into what's next.</h2>
+    <p class="auth-panel-text">
+        List a SaaS, an app, a website, or a creator account and reach buyers already looking.
+    </p>
+</aside>
 
-    <form method="post" class="auth-form" novalidate>
-        <div class="form-group">
-            <label for="name">Full name</label>
-            <input type="text" id="name" name="name" required autofocus
-                   value="{{ name | default('', true) }}"
-                   placeholder="Alex Rivera">
-        </div>
+<div class="auth-form-side">
+    <div class="auth-card">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
 
-        <div class="form-group">
-            <label for="email">Email address</label>
-            <input type="email" id="email" name="email" required
-                   value="{{ email | default('', true) }}"
-                   placeholder="you@example.com">
-        </div>
+        <h1>Create your account</h1>
+        <p class="auth-subtitle">List and sell digital assets in minutes.</p>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required
-                   minlength="8"
-                   placeholder="At least 8 characters">
-        </div>
+        <form method="post" class="auth-form" novalidate>
+            <div class="form-group">
+                <label for="name">Full name</label>
+                <input type="text" id="name" name="name" required autofocus
+                       value="{{ name | default('', true) }}"
+                       placeholder="Alex Rivera">
+            </div>
 
-        <button type="submit" class="btn btn-primary btn-full">Create account</button>
-    </form>
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" required
+                       value="{{ email | default('', true) }}"
+                       placeholder="you@example.com">
+            </div>
 
-    <p class="auth-switch">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required
+                       minlength="8"
+                       placeholder="At least 8 characters">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">Create account</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+    </div>
 </div>
 {% endblock %}
