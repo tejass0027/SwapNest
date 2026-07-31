@@ -71,10 +71,17 @@
             <div class="detail-price-label label-upper">Price</div>
             <div class="detail-price mono">${{ listing.price_cents | usd }}</div>
 
-            {% if listing.status == 'active' %}
-                {% if current_user and current_user.id == listing.seller_id %}
-                    <p class="detail-price-note">This is your listing.</p>
-                {% elif current_user %}
+            {% if current_user and current_user.id == listing.seller_id %}
+                <a href="{{ url_for('listings.edit', listing_id=listing.id) }}" class="btn btn-secondary btn-full">Edit listing</a>
+                {% if listing.status == 'active' %}
+                    <p class="detail-price-note">This is your active listing.</p>
+                {% elif listing.status == 'pending_review' %}
+                    <p class="detail-price-note">Awaiting admin review.</p>
+                {% elif listing.status == 'sold' %}
+                    <p class="detail-price-note">This listing has been sold.</p>
+                {% endif %}
+            {% elif listing.status == 'active' %}
+                {% if current_user %}
                     <form method="post" action="#">
                         <button type="submit" class="btn btn-primary btn-full">Buy now</button>
                     </form>

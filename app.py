@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, g, session, render_template
 
 import db
@@ -7,6 +9,14 @@ from config import Config
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # Upload limits and directory. 4 MB per request is enough for any
+    # reasonable listing image; anything larger triggers a 413.
+    app.config["MAX_CONTENT_LENGTH"] = 4 * 1024 * 1024
+    app.config["UPLOAD_FOLDER"] = os.path.join(
+        app.static_folder, "img", "uploads"
+    )
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
     db.init_app(app)
 

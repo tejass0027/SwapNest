@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}{{ form_title }} — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <h1 class="form-page-title">{{ form_title }}</h1>
+    <p class="form-page-subtitle">
+        {% if listing and listing.id is defined %}
+            Update the details below and save your changes.
+        {% else %}
+            Describe what you're selling. Digital assets go live immediately; social media accounts go to admin review first.
+        {% endif %}
+    </p>
+
+    <form method="post" action="{{ form_action }}" enctype="multipart/form-data" class="listing-form" novalidate>
+
+        {# ── Category & basics ─────────────────────────────── #}
+        <section class="form-section">
+            <h2 class="form-section-title">Category &amp; basics</h2>
+
+            <div class="form-group">
+                <label for="category_id">Category</label>
+                <select id="category_id" name="category_id" required>
+                    <option value="">Choose a category…</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}"
+                                data-grp="{{ cat.grp }}"
+                                {% if listing and listing.category_id == cat.id %}selected{% endif %}>
+                            {{ cat.icon }} {{ cat.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" required maxlength="200"
+                       value="{{ listing.title if listing and listing.title else '' }}"
+                       placeholder="e.g. Invoicely — subscription invoicing SaaS">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="8" required
+                          placeholder="What are you selling? Include the tech stack, key numbers, and anything a buyer will need to make a decision.">{{ listing.description if listing and listing.description else '' }}</textarea>
+            </div>
+        </section>
+
+        {# ── Pricing ────────────────────────────────────────── #}
+        <section class="form-section">
+            <h2 class="form-section-title">Price</h2>
+
+            <div class="form-group form-group-narrow">
+                <label for="price">Sale price (USD)</label>
+                <div class="price-input">
+                    <span class="price-input-prefix mono">$</span>
+                    <input type="text" id="price" name="price" required inputmode="decimal"
+                           value="{{ '%.2f' % (listing.price_cents / 100) if listing and listing.price_cents else (listing.price if listing and listing.price else '') }}"
+                           placeholder="299.00" class="mono">
+                </div>
+            </div>
+        </section>
+
+        {# ── Key metric ─────────────────────────────────────── #}
+        <section class="form-section">
+            <h2 class="form-section-title">Key metric <span class="form-section-optional">Optional</span></h2>
+            <p class="form-section-hint">One prominent number about the asset — subscribers, MRR, monthly visitors, downloads.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="metric_value">Value</label>
+                    <input type="text" id="metric_value" name="metric_value"
+                           value="{{ listing.metric_value if listing and listing.metric_value else '' }}"
+                           placeholder="41,200" class="mono">
+                </div>
+                <div class="form-group">
+                    <label for="metric_label">Label</label>
+                    <input type="text" id="metric_label" name="metric_label"
+                           value="{{ listing.metric_label if listing and listing.metric_label else '' }}"
+                           placeholder="Subscribers">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="platform">Platform</label>
+                <input type="text" id="platform" name="platform"
+                       value="{{ listing.platform if listing and listing.platform else '' }}"
+                       placeholder="Web, iOS, YouTube, …">
+            </div>
+        </section>
+
+        {# ── Delivery ───────────────────────────────────────── #}
+        <section class="form-section">
+            <h2 class="form-section-title">Delivery <span class="form-section-optional">Optional</span></h2>
+
+            <div class="form-group">
+                <label for="delivery_method">How the buyer receives the asset</label>
+                <input type="text" id="delivery_method" name="delivery_method"
+                       value="{{ listing.delivery_method if listing and listing.delivery_method else '' }}"
+                       placeholder="e.g. GitHub repo invite, domain transfer, ownership handoff call">
+            </div>
+        </section>
+
+        {# ── Image ──────────────────────────────────────────── #}
+        <section class="form-section">
+            <h2 class="form-section-title">Image <span class="form-section-optional">Optional</span></h2>
+            <p class="form-section-hint">A single JPG, PNG, WebP, or GIF — up to 4 MB. Shows at the top of the listing.</p>
+
+            {% if listing and listing.image_url %}
+            <div class="form-image-preview">
+                <img src="{{ listing.image_url }}" alt="Current listing image">
+                <div class="form-check">
+                    <input type="checkbox" id="remove_image" name="remove_image" value="1">
+                    <label for="remove_image">Remove this image</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="image">Replace with a new image</label>
+                <input type="file" id="image" name="image"
+                       accept="image/jpeg,image/png,image/webp,image/gif">
+            </div>
+            {% else %}
+            <div class="form-group">
+                <label for="image">Upload an image</label>
+                <input type="file" id="image" name="image"
+                       accept="image/jpeg,image/png,image/webp,image/gif">
+            </div>
+            {% endif %}
+        </section>
+
+        {# ── Social account attestation (conditional) ───────── #}
+        <section class="form-section attestation-section" hidden>
+            <h2 class="form-section-title">Ownership attestation</h2>
+            <div class="form-check form-check-attest">
+                <input type="checkbox" id="seller_attested" name="seller_attested" value="1"
+                       {% if listing and listing.seller_attested %}checked{% endif %}>
+                <label for="seller_attested">
+                    I attest that I am the rightful owner of this account and have the authority to transfer it. I understand that transferring account ownership may violate the platform's terms of service, and that misrepresenting ownership is grounds for removal from {{ site_name }}.
+                </label>
+            </div>
+        </section>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ submit_label }}</button>
+            {% if listing and listing.id is defined %}
+                <a href="{{ url_for('listings.detail', listing_id=listing.id) }}" class="btn btn-ghost">Cancel</a>
+            {% else %}
+                <a href="{{ url_for('listings.home') }}" class="btn btn-ghost">Cancel</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+(function() {
+    var catSelect = document.getElementById('category_id');
+    var attestSection = document.querySelector('.attestation-section');
+    var attestInput = document.getElementById('seller_attested');
+    if (!catSelect || !attestSection || !attestInput) return;
+
+    function refresh() {
+        var opt = catSelect.options[catSelect.selectedIndex];
+        var isSocial = opt && opt.dataset.grp === 'social_account';
+        attestSection.hidden = !isSocial;
+        attestInput.required = isSocial;
+        if (!isSocial) {
+            attestInput.checked = false;
+        }
+    }
+    catSelect.addEventListener('change', refresh);
+    refresh();
+})();
+</script>
+{% endblock %}

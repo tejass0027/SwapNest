@@ -22,7 +22,7 @@
             <div class="nav-links">
                 <a href="{{ url_for('listings.browse') }}" class="nav-link">Browse</a>
                 {% if current_user %}
-                    <a href="#" class="btn btn-primary">Sell an asset</a>
+                    <a href="{{ url_for('listings.new') }}" class="btn btn-primary">Sell an asset</a>
                     <span class="nav-greeting">{{ current_user.name }}</span>
                     <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
                         <button type="submit" class="btn btn-ghost">Log out</button>

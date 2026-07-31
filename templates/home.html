@@ -8,7 +8,7 @@
     </p>
     <div class="hero-actions">
         {% if current_user %}
-            <a href="#" class="btn btn-primary">Sell an asset</a>
+            <a href="{{ url_for('listings.new') }}" class="btn btn-primary">Sell an asset</a>
             <a href="{{ url_for('listings.browse') }}" class="btn btn-secondary">Browse listings</a>
         {% else %}
             <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get started</a>

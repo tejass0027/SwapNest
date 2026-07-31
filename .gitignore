@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .env
 *.db
+static/img/uploads/*
+!static/img/uploads/.gitkeep
