@@ -57,6 +57,47 @@
             {% endif %}
         </div>
         {% endif %}
+
+        {# ── Message thread ───────────────────────────────────── #}
+        <section class="thread" id="messages">
+            <h2 class="thread-heading">Messages</h2>
+            <p class="thread-intro">Ask the seller a question about this listing. Messages are visible to the seller.</p>
+
+            {% if thread %}
+            <ul class="thread-list">
+                {% for m in thread %}
+                <li class="msg {% if m.sender_id == listing.seller_id %}msg-seller{% endif %}">
+                    <div class="msg-head">
+                        <span class="msg-sender">{{ m.sender_name }}</span>
+                        {% if m.sender_id == listing.seller_id %}
+                            <span class="msg-tag">Seller</span>
+                        {% endif %}
+                        <time class="msg-time mono">{{ m.created_at[:16] }}</time>
+                    </div>
+                    <div class="msg-body">{{ m.body }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="thread-empty">No messages yet. Start the conversation below.</p>
+            {% endif %}
+
+            {% if current_user %}
+            <form method="post" action="{{ url_for('messages.post', listing_id=listing.id) }}" class="thread-form">
+                <div class="form-group">
+                    <label for="body">Your message</label>
+                    <textarea id="body" name="body" rows="3" required maxlength="2000"
+                              placeholder="Hi &mdash; is this still available? I have a couple of questions."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send message</button>
+            </form>
+            {% else %}
+            <p class="thread-signin">
+                <a href="{{ url_for('auth.login', next=url_for('listings.detail', listing_id=listing.id)) }}">Log in</a>
+                to send the seller a message.
+            </p>
+            {% endif %}
+        </section>
     </div>
 
     {# ── Sidebar ──────────────────────────────────────────────── #}

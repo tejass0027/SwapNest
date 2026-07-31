@@ -35,6 +35,9 @@ def create_app():
     import admin
     app.register_blueprint(admin.bp)
 
+    import messages
+    app.register_blueprint(messages.bp)
+
     @app.before_request
     def load_logged_in_user():
         user_id = session.get("user_id")

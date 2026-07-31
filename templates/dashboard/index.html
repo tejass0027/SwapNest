@@ -47,6 +47,31 @@
     {% endif %}
 </section>
 
+{# ── Messages on my listings (as seller) ─────────────────────── #}
+<section class="dash-section">
+    <div class="dash-section-header">
+        <h2>Messages</h2>
+    </div>
+
+    {% if messages_received %}
+    <div class="dash-table" role="table">
+        {% for m in messages_received %}
+        <a href="{{ url_for('listings.detail', listing_id=m.listing_id) }}#messages" class="dash-row dash-msg" role="row">
+            <div class="dash-row-main">
+                <div class="dash-row-title">{{ m.listing_title }}</div>
+                <div class="dash-msg-body">{{ m.body }}</div>
+                <div class="dash-row-meta">From {{ m.sender_name }} &middot; <span class="mono">{{ m.created_at[:16] }}</span></div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="dash-empty dash-empty-quiet">
+        <p>No messages yet. Buyers can ask questions from your listing pages.</p>
+    </div>
+    {% endif %}
+</section>
+
 {# ── Orders received (as seller) ─────────────────────────────── #}
 <section class="dash-section">
     <div class="dash-section-header">

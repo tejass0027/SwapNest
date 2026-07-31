@@ -246,7 +246,14 @@ def detail(listing_id):
         if g.user is None or g.user["id"] != listing["seller_id"]:
             abort(404)
 
-    return render_template("detail.html", listing=listing)
+    thread = db.execute(
+        "SELECT m.*, u.name AS sender_name "
+        "FROM messages m JOIN users u ON m.sender_id = u.id "
+        "WHERE m.listing_id = ? ORDER BY m.created_at ASC",
+        (listing_id,),
+    ).fetchall()
+
+    return render_template("detail.html", listing=listing, thread=thread)
 
 
 # ── Create ─────────────────────────────────────────────────────

@@ -46,11 +46,24 @@ def index():
         (uid,),
     ).fetchall()
 
+    # Every message posted on one of my listings — the seller's inbox.
+    messages_received = db.execute(
+        "SELECT m.*, u.name AS sender_name, l.title AS listing_title, "
+        "l.id AS listing_id "
+        "FROM messages m "
+        "JOIN listings l ON m.listing_id = l.id "
+        "JOIN users u ON m.sender_id = u.id "
+        "WHERE l.seller_id = ? AND m.sender_id != ? "
+        "ORDER BY m.created_at DESC LIMIT 20",
+        (uid, uid),
+    ).fetchall()
+
     return render_template(
         "dashboard/index.html",
         my_listings=my_listings,
         orders_received=orders_received,
         orders_placed=orders_placed,
+        messages_received=messages_received,
     )
 
 
