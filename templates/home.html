@@ -1,31 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="hero">
-    <h1>Buy and sell digital assets</h1>
-    <p class="hero-subtitle">
-        SaaS products, apps, websites, domains, templates, and services{% if social_accounts_enabled %} &mdash; plus social media accounts{% endif %}.
-    </p>
-    <div class="hero-actions">
-        {% if current_user %}
-            <a href="{{ url_for('listings.new') }}" class="btn btn-primary">Sell an asset</a>
-            <a href="{{ url_for('listings.browse') }}" class="btn btn-secondary">Browse listings</a>
-        {% else %}
-            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get started</a>
-            <a href="{{ url_for('listings.browse') }}" class="btn btn-secondary">Browse listings</a>
-        {% endif %}
+<section class="hero" data-hero>
+    <div class="hero-fx" aria-hidden="true" data-parallax="0.16">
+        <span class="hero-blob hero-blob-1"></span>
+        <span class="hero-blob hero-blob-2"></span>
+        <span class="hero-sweep"></span>
     </div>
-</div>
+    <div class="hero-inner">
+        <h1 class="hero-title" data-splitwords>Buy and sell digital assets</h1>
+        <p class="hero-subtitle reveal reveal-2">
+            SaaS products, apps, websites, domains, templates, and services{% if social_accounts_enabled %} &mdash; plus social media accounts{% endif %}.
+        </p>
+        <div class="hero-actions reveal reveal-3">
+            {% if current_user %}
+                <a href="{{ url_for('listings.new') }}" class="btn btn-primary">Sell an asset</a>
+                <a href="{{ url_for('listings.browse') }}" class="btn btn-secondary">Browse listings</a>
+            {% else %}
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get started</a>
+                <a href="{{ url_for('listings.browse') }}" class="btn btn-secondary">Browse listings</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
 
 {# ── Category grid ──────────────────────────────────────────── #}
 <section class="home-section">
     <div class="home-section-header">
-        <h2>Browse by category</h2>
+        <h2 class="reveal">Browse by category</h2>
     </div>
-    <div class="category-grid">
+    <div class="category-grid" data-reveal-group>
         {% for cat in categories %}
         <a href="{{ url_for('listings.browse', category=cat.slug) }}"
-           class="category-tile"
+           class="category-tile reveal"
            data-category="{{ cat.slug }}">
             <span class="category-tile-icon" aria-hidden="true">{{ cat.icon }}</span>
             <span class="category-tile-name">{{ cat.name }}</span>
@@ -38,13 +45,13 @@
 {% if featured %}
 <section class="home-section">
     <div class="home-section-header">
-        <h2>Featured listings</h2>
-        <a href="{{ url_for('listings.browse') }}" class="home-section-link">View all &rarr;</a>
+        <h2 class="reveal">Featured listings</h2>
+        <a href="{{ url_for('listings.browse') }}" class="home-section-link reveal reveal-2">View all &rarr;</a>
     </div>
-    <div class="listing-grid">
+    <div class="listing-grid" data-reveal-group>
         {% for l in featured %}
         <a href="{{ url_for('listings.detail', listing_id=l.id) }}"
-           class="listing-card"
+           class="listing-card reveal"
            data-category="{{ l.category_slug }}">
             <div class="listing-card-top">
                 <span class="listing-card-icon" aria-hidden="true">{{ l.category_icon }}</span>

@@ -14,6 +14,7 @@
     <link data-theme-css="dark" rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
     <link data-theme-css="dark" rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link data-theme-css="dark" rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+    <link data-theme-css="dark" rel="stylesheet" href="{{ url_for('static', filename='css/motion.css') }}">
 
     <!-- Bright theme (previous UI) — loaded but parked until selected -->
     <link data-theme-css="light" rel="stylesheet" href="{{ url_for('static', filename='css/theme-light.css') }}" media="not all">
@@ -31,6 +32,7 @@
     <script>
       /* Set the theme before first paint to avoid a flash. */
       (function () {
+        document.documentElement.classList.add('js');
         var t = 'dark';
         try { t = localStorage.getItem('ledger-theme') || 'dark'; } catch (e) {}
         document.documentElement.setAttribute('data-theme', t);

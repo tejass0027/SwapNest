@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════════════════════
+   Ledger — Motion (dark theme only; loaded in the dark bundle).
+   transform + opacity only. Everything degrades to a static,
+   fully-visible layout without JS or under reduced-motion.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reveal on scroll ──────────────────────────────────────────
+   Entrance runs as an animation so that, once finished, JS swaps
+   the element to `.revealed` and the element's own hover transitions
+   are left untouched. Hidden state only applies when JS is active. */
+html.js .reveal { opacity: 0; }
+html.js .reveal.is-visible {
+    animation: revealIn var(--dur-slow) var(--ease-soft) var(--rd, 0ms) both;
+}
+html.js .revealed { opacity: 1; }
+
+/* Manual entrance offsets for a few hand-placed elements */
+html.js .reveal-2 { --rd: 90ms; }
+html.js .reveal-3 { --rd: 170ms; }
+
+@keyframes revealIn {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.js .reveal,
+    html.js .reveal.is-visible { opacity: 1 !important; animation: none !important; }
+}
+
+/* ── Hero ambient field ────────────────────────────────────── */
+.hero-fx {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+    will-change: transform;
+}
+.hero-inner { position: relative; z-index: 1; }
+
+.hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(46px);
+    opacity: 0.5;
+    will-change: transform;
+}
+.hero-blob-1 {
+    width: 46%; height: 130%; left: -6%; top: -34%;
+    background: radial-gradient(circle at center, color-mix(in srgb, var(--gold) 60%, transparent), transparent 68%);
+}
+.hero-blob-2 {
+    width: 52%; height: 140%; right: -10%; bottom: -44%;
+    background: radial-gradient(circle at center, color-mix(in srgb, var(--software) 62%, transparent), transparent 68%);
+}
+.hero-sweep {
+    position: absolute;
+    top: -60%; left: -40%;
+    width: 34%; height: 220%;
+    transform: rotate(18deg) translateX(-55vw);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 641px) {
+    .hero-blob-1 { animation: blobA 20s var(--ease-soft) infinite alternate; }
+    .hero-blob-2 { animation: blobB 24s var(--ease-soft) infinite alternate; }
+    .hero-sweep  { animation: heroSweep 11s var(--ease-soft) 2.5s infinite; }
+}
+@keyframes blobA { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(9%, 7%, 0) scale(1.16); } }
+@keyframes blobB { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(-7%, -9%, 0) scale(1.12); } }
+@keyframes heroSweep {
+    0%   { transform: rotate(18deg) translateX(-55vw); opacity: 0; }
+    12%  { opacity: 1; }
+    46%  { transform: rotate(18deg) translateX(135vw); opacity: 0; }
+    100% { opacity: 0; }
+}
+
+/* ── Headline word reveal ──────────────────────────────────── */
+html.js .hero-title[data-splitwords] { opacity: 0; }
+html.js .hero-title[data-splitwords].is-visible { opacity: 1; }
+html.js .hero-title .word { display: inline-block; overflow: hidden; vertical-align: top; }
+html.js .hero-title .word-i { display: inline-block; transform: translateY(105%); opacity: 0; will-change: transform; }
+
+@media (prefers-reduced-motion: no-preference) {
+    html.js .hero-title.is-visible .word-i {
+        animation: wordUp 0.72s var(--ease-soft) var(--wd, 0ms) both;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    html.js .hero-title[data-splitwords] { opacity: 1; }
+    html.js .hero-title .word-i { transform: none; opacity: 1; }
+}
+@keyframes wordUp {
+    from { transform: translateY(105%); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Counters keep their space stable while ticking ────────── */
+html.js [data-count] { font-variant-numeric: tabular-nums; }
