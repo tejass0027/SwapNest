@@ -138,6 +138,23 @@
         }
     }
 
+    // ── Auto-count numeric metric values on the detail page ───
+    // Only when the text is a plain integer (optionally comma-grouped).
+    // Anything else — "$1,200/mo", "42K", "3 years" — is left alone.
+    if (isDark() && !reduceMotion) {
+        var metricEls = document.querySelectorAll(".detail-stat .metric-value");
+        for (var mi = 0; mi < metricEls.length; mi++) {
+            var raw = metricEls[mi].textContent.trim();
+            if (/^\d[\d,]*$/.test(raw)) {
+                var n = parseInt(raw.replace(/,/g, ""), 10);
+                if (!isNaN(n) && n > 0) {
+                    metricEls[mi].setAttribute("data-count", String(n));
+                    metricEls[mi].textContent = "0";
+                }
+            }
+        }
+    }
+
     // ── Animated counters ──────────────────────────────────────
     var counters = document.querySelectorAll("[data-count]");
     function runCount(el) {

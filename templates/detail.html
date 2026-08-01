@@ -2,7 +2,7 @@
 {% block title %}{{ listing.title }} — {{ site_name }}{% endblock %}
 
 {% block content %}
-<nav class="breadcrumb" aria-label="Breadcrumb">
+<nav class="breadcrumb reveal" aria-label="Breadcrumb">
     <a href="{{ url_for('listings.home') }}">Home</a>
     <span class="breadcrumb-sep" aria-hidden="true">/</span>
     <a href="{{ url_for('listings.browse', category=listing.category_slug) }}">{{ listing.category_name }}</a>
@@ -13,7 +13,11 @@
 <div class="detail-layout" data-category="{{ listing.category_slug }}">
     {# ── Main column ──────────────────────────────────────────── #}
     <div class="detail-main">
-        <div class="detail-hero">
+        <div class="detail-hero reveal">
+            <div class="detail-hero-fx" aria-hidden="true">
+                <span class="detail-blob detail-blob-1"></span>
+                <span class="detail-blob detail-blob-2"></span>
+            </div>
             {% if listing.image_url %}
                 <img src="{{ listing.image_url }}" alt="{{ listing.title }}">
             {% else %}
@@ -22,14 +26,14 @@
         </div>
 
         {% if listing.category_grp == 'social_account' %}
-        <div class="detail-notice">
+        <div class="detail-notice reveal">
             <strong>Important:</strong> Transferring ownership of social media accounts may violate the platform's terms of service. Accounts can be reclaimed or banned after transfer. Buyers should do their own due diligence before purchasing.
         </div>
         {% endif %}
 
-        <h1 class="detail-title">{{ listing.title }}</h1>
+        <h1 class="detail-title reveal">{{ listing.title }}</h1>
 
-        <div class="detail-meta">
+        <div class="detail-meta reveal reveal-2">
             <span class="badge badge-{{ 'active' if listing.status == 'active' else 'pending' if listing.status == 'pending_review' else 'sold' if listing.status == 'sold' else 'removed' }}">
                 {{ listing.status | replace('_', ' ') }}
             </span>
@@ -39,10 +43,10 @@
             {% endif %}
         </div>
 
-        <div class="detail-description">{{ listing.description }}</div>
+        <div class="detail-description reveal reveal-3">{{ listing.description }}</div>
 
         {% if listing.metric_value or listing.delivery_method %}
-        <div class="detail-stats">
+        <div class="detail-stats reveal">
             {% if listing.metric_value %}
             <div class="detail-stat">
                 <div class="metric-value">{{ listing.metric_value }}</div>
@@ -60,13 +64,13 @@
 
         {# ── Message thread ───────────────────────────────────── #}
         <section class="thread" id="messages">
-            <h2 class="thread-heading">Messages</h2>
-            <p class="thread-intro">Ask the seller a question about this listing. Messages are visible to the seller.</p>
+            <h2 class="thread-heading reveal">Messages</h2>
+            <p class="thread-intro reveal reveal-2">Ask the seller a question about this listing. Messages are visible to the seller.</p>
 
             {% if thread %}
-            <ul class="thread-list">
+            <ul class="thread-list" data-reveal-group>
                 {% for m in thread %}
-                <li class="msg {% if m.sender_id == listing.seller_id %}msg-seller{% endif %}">
+                <li class="msg reveal {% if m.sender_id == listing.seller_id %}msg-seller{% endif %}">
                     <div class="msg-head">
                         <span class="msg-sender">{{ m.sender_name }}</span>
                         {% if m.sender_id == listing.seller_id %}
@@ -79,11 +83,11 @@
                 {% endfor %}
             </ul>
             {% else %}
-            <p class="thread-empty">No messages yet. Start the conversation below.</p>
+            <p class="thread-empty reveal">No messages yet. Start the conversation below.</p>
             {% endif %}
 
             {% if current_user %}
-            <form method="post" action="{{ url_for('messages.post', listing_id=listing.id) }}" class="thread-form">
+            <form method="post" action="{{ url_for('messages.post', listing_id=listing.id) }}" class="thread-form reveal">
                 <div class="form-group">
                     <label for="body">Your message</label>
                     <textarea id="body" name="body" rows="3" required maxlength="2000"
@@ -92,7 +96,7 @@
                 <button type="submit" class="btn btn-primary">Send message</button>
             </form>
             {% else %}
-            <p class="thread-signin">
+            <p class="thread-signin reveal">
                 <a href="{{ url_for('auth.login', next=url_for('listings.detail', listing_id=listing.id)) }}">Log in</a>
                 to send the seller a message.
             </p>
@@ -102,7 +106,7 @@
 
     {# ── Sidebar ──────────────────────────────────────────────── #}
     <aside class="detail-sidebar">
-        <div class="detail-price-card">
+        <div class="detail-price-card reveal">
             <div class="detail-price-label label-upper">Price</div>
             <div class="detail-price">${{ listing.price_cents | usd }}</div>
 
@@ -128,7 +132,7 @@
             {% endif %}
         </div>
 
-        <div class="detail-seller-card">
+        <div class="detail-seller-card reveal reveal-2">
             <div class="label-upper">Seller</div>
             <div class="detail-seller-name">
                 <span>{{ listing.seller_name }}</span>

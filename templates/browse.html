@@ -3,7 +3,7 @@
 
 {% block content %}
 <header class="browse-header">
-    <h1>
+    <h1 class="reveal">
         {% if active_category %}
             {{ active_category.name }}
         {% elif f_q %}
@@ -12,11 +12,11 @@
             All listings
         {% endif %}
     </h1>
-    <p class="browse-count mono">{{ count }} {{ "listing" if count == 1 else "listings" }}</p>
+    <p class="browse-count mono reveal reveal-2">{{ count }} {{ "listing" if count == 1 else "listings" }}</p>
 </header>
 
 {# ── Toolbar: search + sort + price ──────────────────────────── #}
-<form method="get" action="{{ url_for('listings.browse') }}" class="browse-toolbar">
+<form method="get" action="{{ url_for('listings.browse') }}" class="browse-toolbar reveal">
     <div class="form-group">
         <label for="q">Search</label>
         <input type="text" id="q" name="q" value="{{ f_q }}" placeholder="Search title or description">
@@ -45,22 +45,22 @@
 </form>
 
 {# ── Category chips ──────────────────────────────────────────── #}
-<nav class="filter-chips" aria-label="Filter by category">
+<nav class="filter-chips" aria-label="Filter by category" data-reveal-group>
     <a href="{{ url_for('listings.browse', q=f_q, price_min=f_price_min, price_max=f_price_max, sort=sort_key) }}"
-       class="chip {% if not f_category %}is-active{% endif %}">All</a>
+       class="chip reveal {% if not f_category %}is-active{% endif %}">All</a>
     {% for cat in categories %}
         <a href="{{ url_for('listings.browse', category=cat.slug, q=f_q, price_min=f_price_min, price_max=f_price_max, sort=sort_key) }}"
-           class="chip {% if f_category == cat.slug %}is-active{% endif %}"
+           class="chip reveal {% if f_category == cat.slug %}is-active{% endif %}"
            data-category="{{ cat.slug }}">{{ cat.name }}</a>
     {% endfor %}
 </nav>
 
 {# ── Listing grid ────────────────────────────────────────────── #}
 {% if listings %}
-<div class="listing-grid">
+<div class="listing-grid" data-reveal-group>
     {% for l in listings %}
     <a href="{{ url_for('listings.detail', listing_id=l.id) }}"
-       class="listing-card"
+       class="listing-card reveal"
        data-category="{{ l.category_slug }}">
         <div class="listing-card-top">
             <span class="listing-card-icon" aria-hidden="true">{{ l.category_icon }}</span>
@@ -83,7 +83,7 @@
 </div>
 
 {% if total_pages > 1 %}
-<nav class="pagination" aria-label="Listing pages">
+<nav class="pagination reveal" aria-label="Listing pages">
     {% if page > 1 %}
         <a href="{{ url_for('listings.browse', page=page-1, q=f_q, category=f_category, price_min=f_price_min, price_max=f_price_max, sort=sort_key) }}"
            class="btn btn-secondary">&larr; Previous</a>
@@ -97,7 +97,7 @@
 {% endif %}
 
 {% else %}
-<div class="empty-state">
+<div class="empty-state reveal">
     <p class="empty-state-heading">No listings match your filters</p>
     <p class="empty-state-body">Try broadening your search or <a href="{{ url_for('listings.browse') }}">clear all filters</a>.</p>
 </div>

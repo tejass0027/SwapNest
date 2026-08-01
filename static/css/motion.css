@@ -100,3 +100,67 @@ html.js .hero-title .word-i { display: inline-block; transform: translateY(105%)
 
 /* ── Counters keep their space stable while ticking ────────── */
 html.js [data-count] { font-variant-numeric: tabular-nums; }
+
+/* ═══════════════════════════════════════════════════════════════
+   DETAIL PAGE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Ambient drift on the detail hero, tinted by the listing's category.
+   Sits behind whatever content the hero holds (image or icon). */
+.detail-hero { position: relative; overflow: hidden; }
+.detail-hero > img,
+.detail-hero > .detail-hero-icon { position: relative; z-index: 1; }
+
+.detail-hero-fx {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.detail-blob {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--cat, var(--gold)) 55%, transparent), transparent 70%);
+    filter: blur(46px);
+    opacity: 0.75;
+    will-change: transform;
+}
+.detail-blob-1 { width: 60%; height: 150%; left: -12%; top: -30%; }
+.detail-blob-2 { width: 55%; height: 140%; right: -14%; bottom: -34%; opacity: 0.55; }
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 641px) {
+    .detail-blob-1 { animation: detailBlobA 22s var(--ease-soft) infinite alternate; }
+    .detail-blob-2 { animation: detailBlobB 26s var(--ease-soft) infinite alternate; }
+}
+@keyframes detailBlobA {
+    from { transform: translate3d(0,0,0) scale(1); }
+    to   { transform: translate3d(24%, 10%, 0) scale(1.12); }
+}
+@keyframes detailBlobB {
+    from { transform: translate3d(0,0,0) scale(1); }
+    to   { transform: translate3d(-22%, -12%, 0) scale(1.08); }
+}
+
+/* Sticky price/seller sidebar on desktop. Uses the header offset (68px)
+   plus a comfortable gap. Falls back to normal flow below the breakpoint. */
+@media (min-width: 901px) {
+    .detail-sidebar {
+        position: sticky;
+        top: 92px;
+        align-self: start;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BROWSE
+   ═══════════════════════════════════════════════════════════════ */
+/* Chips share the .reveal system; the smaller offset keeps their
+   entrance quick and snappy compared to full cards. */
+html.js .chip.reveal.is-visible {
+    animation: chipIn 480ms var(--ease-soft) var(--rd, 0ms) both;
+}
+@keyframes chipIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
