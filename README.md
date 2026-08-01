@@ -1,4 +1,4 @@
-# Ledger — Digital Assets Marketplace
+# SwapNest — Digital Assets Marketplace
 
 A marketplace where people list and sell digital assets: SaaS products, mobile apps, websites and domains, code templates, digital services — and, optionally, social media accounts (YouTube, Instagram, TikTok, X, Facebook).
 
@@ -31,7 +31,7 @@ No Node build step. No bundler. `pip install -r requirements.txt` and run.
 
 ```bash
 # 1. Clone and enter the project
-cd ledger
+cd swapnest
 
 # 2. Create a virtual environment
 python3 -m venv .venv
@@ -76,7 +76,7 @@ All config lives in `config.py` and reads from environment variables.
 | `STRIPE_PUBLISHABLE_KEY` | *(empty)* | Stripe publishable key |
 | `PLATFORM_FEE_PERCENT` | `5` | Marketplace cut, shown transparently at checkout |
 | `ENABLE_SOCIAL_ACCOUNTS` | `true` | Set to `false` to hide the social-account category group entirely |
-| `SITE_NAME` | `Ledger` | Display name used across the UI |
+| `SITE_NAME` | `SwapNest` | Display name used across the UI |
 
 ### Demo mode
 
@@ -96,7 +96,7 @@ Use Stripe **test** keys first. Test card: `4242 4242 4242 4242`, any future exp
 ## Project structure
 
 ```
-ledger/
+swapnest/
 ├── app.py               # Application factory, blueprint registration
 ├── config.py            # Configuration and feature flags
 ├── db.py                # SQLite connection handling

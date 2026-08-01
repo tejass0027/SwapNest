@@ -15,7 +15,7 @@ class Config:
     STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
     PLATFORM_FEE_PERCENT = int(os.environ.get("PLATFORM_FEE_PERCENT", "5"))
     ENABLE_SOCIAL_ACCOUNTS = _bool_env(os.environ.get("ENABLE_SOCIAL_ACCOUNTS"), True)
-    SITE_NAME = os.environ.get("SITE_NAME", "Ledger")
+    SITE_NAME = os.environ.get("SITE_NAME", "SwapNest")
 
     # No Stripe key configured means there's no way to actually charge a
     # card, so the app runs in demo mode: purchases complete instantly and

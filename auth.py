@@ -48,7 +48,7 @@ def register():
         db.commit()
         session.clear()
         session["user_id"] = cur.lastrowid
-        flash("Welcome to Ledger! Your account has been created.", "success")
+        flash("Welcome to SwapNest! Your account has been created.", "success")
         return redirect(url_for("listings.home"))
 
     return render_template("auth/register.html")

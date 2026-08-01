@@ -24,7 +24,7 @@ CATEGORIES = [
 
 # (name, email, password, is_admin, is_verified, bio)
 USERS = [
-    ("Ledger Admin", "admin@ledger.test", "admin123", 1, 1,
+    ("SwapNest Admin", "admin@ledger.test", "admin123", 1, 1,
      "Keeping the marketplace tidy."),
     ("Alex Rivera", "alex@ledger.test", "password123", 0, 1,
      "Full-stack dev flipping side projects."),
