@@ -88,6 +88,7 @@
 
             {% if current_user %}
             <form method="post" action="{{ url_for('messages.post', listing_id=listing.id) }}" class="thread-form reveal">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="form-group">
                     <label for="body">Your message</label>
                     <textarea id="body" name="body" rows="3" required maxlength="2000"

@@ -41,6 +41,7 @@
         </div>
 
         <form method="post" action="{{ url_for('checkout.start', listing_id=listing.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-primary btn-full">
                 {% if demo_mode %}Complete demo purchase{% else %}Continue to payment{% endif %}
             </button>

@@ -35,6 +35,7 @@
         <p class="auth-subtitle">List and sell digital assets in minutes.</p>
 
         <form method="post" class="auth-form" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label for="name">Full name</label>
                 <input type="text" id="name" name="name" required autofocus

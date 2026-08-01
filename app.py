@@ -1,14 +1,26 @@
 import os
 
 from flask import Flask, g, session, render_template
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_wtf import CSRFProtect
 
 import db
 from config import Config
+
+# Module-level so blueprint files can import them (e.g. auth.py applies
+# rate limits to login/register). Both are bound to the app in
+# create_app() via init_app().
+csrf = CSRFProtect()
+limiter = Limiter(key_func=get_remote_address, default_limits=[])
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    csrf.init_app(app)
+    limiter.init_app(app)
 
     # Upload limits and directory. 4 MB per request is enough for any
     # reasonable listing image; anything larger triggers a 413.
@@ -28,6 +40,10 @@ def create_app():
 
     import checkout
     app.register_blueprint(checkout.bp)
+    # Stripe calls this directly — it's a signed server-to-server
+    # callback, not a browser form, so it never carries a CSRF token.
+    # checkout.webhook() verifies the Stripe-Signature header itself.
+    csrf.exempt(checkout.webhook)
 
     import dashboard
     app.register_blueprint(dashboard.bp)

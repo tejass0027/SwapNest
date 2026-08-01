@@ -43,10 +43,12 @@
             <span class="dash-row-price mono">${{ l.price_cents | usd }}</span>
             <div class="dash-row-actions">
                 <form method="post" action="{{ url_for('admin.approve', listing_id=l.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn btn-primary btn-sm">Approve</button>
                 </form>
                 <form method="post" action="{{ url_for('admin.reject', listing_id=l.id) }}" class="inline-form"
                       onsubmit="return confirm('Reject and remove this listing?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn btn-secondary btn-sm">Reject</button>
                 </form>
             </div>

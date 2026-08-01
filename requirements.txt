@@ -1,3 +1,5 @@
 Flask
 Werkzeug
 requests
+Flask-WTF
+Flask-Limiter

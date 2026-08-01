@@ -3,6 +3,7 @@ import re
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, g
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from app import limiter
 from db import get_db
 from helpers import safe_redirect_url
 
@@ -12,6 +13,7 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 
 @bp.route("/register", methods=("GET", "POST"))
+@limiter.limit("5 per minute", methods=["POST"])
 def register():
     if g.user:
         return redirect(url_for("listings.home"))
@@ -55,6 +57,7 @@ def register():
 
 
 @bp.route("/login", methods=("GET", "POST"))
+@limiter.limit("10 per minute", methods=["POST"])
 def login():
     if g.user:
         return redirect(url_for("listings.home"))

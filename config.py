@@ -21,3 +21,11 @@ class Config:
     # card, so the app runs in demo mode: purchases complete instantly and
     # are clearly labelled as fake.
     DEMO_MODE = not STRIPE_SECRET_KEY
+
+    # Cookie hardening. SECURE defaults to False so local dev over plain
+    # http:// keeps working — browsers silently drop "Secure" cookies on
+    # a non-HTTPS origin, which would otherwise break every login. Set
+    # SESSION_COOKIE_SECURE=true once the app is served over HTTPS.
+    SESSION_COOKIE_SECURE = _bool_env(os.environ.get("SESSION_COOKIE_SECURE"), False)
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"

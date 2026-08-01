@@ -32,6 +32,7 @@
                     <a href="{{ url_for('listings.edit', listing_id=l.id) }}" class="btn btn-ghost btn-sm">Edit</a>
                     <form method="post" action="{{ url_for('listings.remove', listing_id=l.id) }}" class="inline-form"
                           onsubmit="return confirm('Remove this listing? Buyers will no longer see it.');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-ghost btn-sm dash-remove">Remove</button>
                     </form>
                 {% endif %}

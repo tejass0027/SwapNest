@@ -8,7 +8,9 @@ Buyers browse, filter, message sellers, and pay through Stripe Checkout. Sellers
 
 ## Status
 
-Early scaffold. Auth, listings, checkout, and admin review are specified but not all implemented. See `CLAUDE_CODE_PROMPT.md` for the full build spec.
+Feature-complete build covering the spec in `CLAUDE_CODE_PROMPT.md`: auth, listing browse/search/detail/create/edit, Stripe checkout (with a demo mode that needs no payment provider configured), seller/buyer dashboards, an admin review queue for account listings, and buyer↔seller messaging. CSRF protection and rate limiting are wired in — see the security checklist below for what's still worth doing before real traffic.
+
+The UI ships with two themes — a dark "luxury" default and the original light theme, switchable from the nav — plus tiered scroll motion: full showcase treatment on the home/browse/listing pages, restrained micro-interactions on the dashboard and admin, and instant/minimal on auth and checkout.
 
 ---
 
@@ -22,6 +24,8 @@ Early scaffold. Auth, listings, checkout, and admin review are specified but not
 | Styling | Hand-written CSS, custom properties | Full control, no framework bloat |
 | Payments | Stripe Checkout (hosted) | Card data never touches your server |
 | Auth | Werkzeug password hashing + Flask sessions | Built in, no extra dependency |
+| CSRF | Flask-WTF | One token, every state-changing form |
+| Rate limiting | Flask-Limiter | Blunt but effective on login/register |
 
 No Node build step. No bundler. `pip install -r requirements.txt` and run.
 
@@ -77,6 +81,7 @@ All config lives in `config.py` and reads from environment variables.
 | `PLATFORM_FEE_PERCENT` | `5` | Marketplace cut, shown transparently at checkout |
 | `ENABLE_SOCIAL_ACCOUNTS` | `true` | Set to `false` to hide the social-account category group entirely |
 | `SITE_NAME` | `SwapNest` | Display name used across the UI |
+| `SESSION_COOKIE_SECURE` | `false` | Set to `true` once served over HTTPS. Left `false` by default — browsers silently drop `Secure` cookies on plain `http://`, which would otherwise break every login in local dev |
 
 ### Demo mode
 
@@ -154,12 +159,12 @@ The general digital-assets categories carry none of this baggage and are a large
 
 - [ ] Change `SECRET_KEY` to a long random value
 - [ ] Change or delete all seeded demo accounts
-- [ ] Set `session_cookie_secure = True` and serve over HTTPS
-- [ ] Add CSRF protection on every form (`Flask-WTF`)
-- [ ] Add rate limiting on login and registration (`Flask-Limiter`)
-- [ ] Verify Stripe webhook signatures — never trust an unsigned callback
+- [x] Set `SESSION_COOKIE_SECURE=true` and serve over HTTPS — the flag exists in `config.py` and defaults to `false` so local `http://` dev keeps working; flip it once you're behind HTTPS. `HttpOnly` and `SameSite=Lax` are already on unconditionally.
+- [x] CSRF protection on every form (`Flask-WTF`) — every state-changing form carries a token; requests without one get a 400. The Stripe webhook is explicitly exempted since it's a signed server-to-server callback, not a browser form.
+- [x] Rate limiting on login and registration (`Flask-Limiter`) — 10/min and 5/min per IP, counting only POST attempts. Uses in-memory storage: fine for a single worker, but move to a shared backend (e.g. Redis) once you run more than one process. Note: Flask's `debug=True` auto-reloader can prevent the in-memory counter from enforcing correctly during local dev on some platforms — this doesn't affect a real deployment behind gunicorn/waitress, which never uses that reloader.
+- [x] Verify Stripe webhook signatures — `checkout.py` rejects unsigned, tampered, or stale (>5 min) callbacks.
 - [ ] Validate and re-encode uploaded images; serve them off a separate domain or CDN
-- [ ] Escape all user-supplied content (Jinja2 autoescapes by default — don't use `|safe` on user input)
+- [x] Escape all user-supplied content — Jinja2 autoescapes by default, and nothing in the codebase uses `|safe` on user input.
 - [ ] Move from SQLite to Postgres before you have real traffic
 
 ---

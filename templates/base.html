@@ -77,6 +77,7 @@
                     <a href="{{ url_for('listings.new') }}" class="btn btn-primary">Sell an asset</a>
                     <a href="{{ url_for('dashboard.profile') }}" class="nav-greeting">{{ current_user.name }}</a>
                     <form method="post" action="{{ url_for('auth.logout') }}" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-ghost">Log out</button>
                     </form>
                 {% else %}

@@ -13,6 +13,7 @@
     </p>
 
     <form method="post" action="{{ form_action }}" enctype="multipart/form-data" class="listing-form" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
         {# ── Category & basics ─────────────────────────────── #}
         <section class="form-section">
