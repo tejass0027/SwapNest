@@ -322,6 +322,21 @@
 }
 .empty-state-body { color: var(--ink-muted); font-size: var(--text-sm); }
 
+/* Icon badge shared by .empty-state and .dash-empty */
+.empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    color: var(--ink-dim);
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: var(--sp-4);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    BADGES
    ═══════════════════════════════════════════════════════════════ */

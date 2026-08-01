@@ -98,6 +98,7 @@
 
 {% else %}
 <div class="empty-state reveal">
+    <span class="empty-icon" aria-hidden="true">&#128269;</span>
     <p class="empty-state-heading">No listings match your filters</p>
     <p class="empty-state-body">Try broadening your search or <a href="{{ url_for('listings.browse') }}">clear all filters</a>.</p>
 </div>

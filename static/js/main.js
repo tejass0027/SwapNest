@@ -253,4 +253,46 @@
             })(fields[fi]);
         }
     }
+
+    // ── Flash messages: manual close + auto-dismiss ────────────
+    // Success/info messages clear themselves after a few seconds;
+    // errors and warnings stay until the user dismisses them — an
+    // error the user didn't get to read yet shouldn't vanish on them.
+    var flashes = document.querySelectorAll(".flash");
+    for (var fli = 0; fli < flashes.length; fli++) {
+        (function (flash) {
+            var timer = null;
+
+            function dismiss() {
+                if (timer) { clearTimeout(timer); timer = null; }
+                if (flash.classList.contains("is-dismissing")) return;
+                flash.classList.add("is-dismissing");
+                flash.addEventListener("transitionend", function onEnd(e) {
+                    if (e.target !== flash) return;
+                    flash.removeEventListener("transitionend", onEnd);
+                    if (flash.parentNode) flash.parentNode.removeChild(flash);
+                });
+                // Fallback in case no transition runs (e.g. some
+                // reduced-motion browsers skip transitionend entirely).
+                setTimeout(function () {
+                    if (flash.parentNode) flash.parentNode.removeChild(flash);
+                }, 500);
+            }
+
+            var closeBtn = flash.querySelector(".flash-close");
+            if (closeBtn) { closeBtn.addEventListener("click", dismiss); }
+
+            var autoDismiss = flash.classList.contains("flash-success") ||
+                               flash.classList.contains("flash-info");
+            if (autoDismiss) {
+                function start() { timer = setTimeout(dismiss, 6000); }
+                function stop() { if (timer) { clearTimeout(timer); timer = null; } }
+                start();
+                flash.addEventListener("mouseenter", stop);
+                flash.addEventListener("mouseleave", start);
+                flash.addEventListener("focusin", stop);
+                flash.addEventListener("focusout", start);
+            }
+        })(flashes[fli]);
+    }
 })();

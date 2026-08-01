@@ -380,17 +380,65 @@ a:hover { color: var(--brand-dark); }
 .flash-messages { margin-bottom: var(--sp-6); }
 
 .flash {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--sp-3);
     padding: var(--sp-3) var(--sp-4);
     border-radius: var(--radius-sm);
     font-size: var(--text-sm);
     font-weight: 500;
     margin-bottom: var(--sp-2);
+    overflow: hidden;
 }
+
+.flash-text { flex: 1; line-height: 1.5; }
+
+.flash-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 0 2px;
+    margin: -2px -2px 0 0;
+    color: inherit;
+    opacity: 0.55;
+    font-size: 18px;
+    line-height: 1.2;
+    cursor: pointer;
+}
+.flash-close:hover { opacity: 1; }
 
 .flash-success { background: var(--tiktok-soft); color: var(--tiktok-dark); }
 .flash-error   { background: var(--danger-soft); color: var(--danger); }
 .flash-warning { background: var(--apps-soft); color: var(--apps-dark); }
 .flash-info    { background: var(--brand-soft); color: var(--brand-dark); }
+
+@media (prefers-reduced-motion: no-preference) {
+    .flash {
+        max-height: 300px;
+        animation: flashIn 240ms ease-out both;
+        transition: max-height 260ms ease-out,
+                    opacity 200ms ease-out,
+                    margin 260ms ease-out,
+                    padding 260ms ease-out;
+    }
+    .flash.is-dismissing {
+        opacity: 0;
+        max-height: 0;
+        margin-bottom: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        pointer-events: none;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .flash { transition: opacity 150ms ease-out; }
+    .flash.is-dismissing { opacity: 0; pointer-events: none; }
+}
+@keyframes flashIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    HERO
@@ -720,6 +768,21 @@ a:hover { color: var(--brand-dark); }
     margin-bottom: var(--sp-2);
 }
 .empty-state-body { color: var(--ink-muted); font-size: var(--text-sm); }
+
+/* Icon badge shared by .empty-state and .dash-empty */
+.empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: var(--sp-4);
+}
 
 /* ═══════════════════════════════════════════════════════════════
    BADGES

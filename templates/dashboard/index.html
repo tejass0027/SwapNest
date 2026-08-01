@@ -41,6 +41,7 @@
     </div>
     {% else %}
     <div class="dash-empty">
+        <span class="empty-icon" aria-hidden="true">&#128230;</span>
         <p>You haven't listed anything yet.</p>
         <a href="{{ url_for('listings.new') }}" class="btn btn-primary">List your first asset</a>
     </div>
