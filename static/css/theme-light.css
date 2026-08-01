@@ -342,6 +342,39 @@ a:hover { color: var(--brand-dark); }
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   MINIMAL TIER — auth & checkout (same behaviour as the dark theme)
+   ═══════════════════════════════════════════════════════════════ */
+.field-hint {
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--danger);
+    margin-top: var(--sp-1);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 150ms ease-out, max-height 200ms ease-out;
+}
+.field-hint.is-shown { opacity: 1; max-height: 64px; }
+
+.btn.is-submitting { pointer-events: none; opacity: 0.72; cursor: default; }
+.btn.is-submitting::after {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: var(--sp-2);
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    vertical-align: -2px;
+    animation: btnSpin 720ms linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+    .btn.is-submitting::after { animation: none; opacity: 0.5; }
+}
+@keyframes btnSpin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════════════════════
    FLASH
    ═══════════════════════════════════════════════════════════════ */
 .flash-messages { margin-bottom: var(--sp-6); }

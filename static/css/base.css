@@ -311,6 +311,47 @@ a:hover { color: var(--gold-bright); }
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   MINIMAL TIER — auth & checkout
+   Functional, not decorative: identical in both themes. Speed and
+   clarity only — never blocks or delays a submit.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Inline validation hint, inserted by JS after a field on blur.
+   Reserves no space until it has something to say. */
+.field-hint {
+    display: block;
+    font-size: var(--text-sm);
+    color: var(--danger);
+    margin-top: var(--sp-1);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 150ms ease-out, max-height 200ms ease-out;
+}
+.field-hint.is-shown { opacity: 1; max-height: 64px; }
+
+/* Loading state on a submitting button — login, sign up, buy.
+   Prevents double-submits (critical for checkout). Spinner draws
+   from currentColor so it reads correctly on any button variant. */
+.btn.is-submitting { pointer-events: none; opacity: 0.72; cursor: default; }
+.btn.is-submitting::after {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-left: var(--sp-2);
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    vertical-align: -2px;
+    animation: btnSpin 720ms linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+    .btn.is-submitting::after { animation: none; opacity: 0.5; }
+}
+@keyframes btnSpin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════════════════════════
    FLASH
    ═══════════════════════════════════════════════════════════════ */
 .flash-messages { margin-bottom: var(--sp-6); }

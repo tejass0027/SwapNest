@@ -191,4 +191,66 @@
     } else {
         for (var c2 = 0; c2 < counters.length; c2++) { runCount(counters[c2]); }
     }
+
+    // ── Minimal tier: auth + checkout ──────────────────────────
+    // Speed and clarity over spectacle. Nothing here blocks or delays
+    // a submit — the server remains the source of truth for validation
+    // (auth forms use novalidate deliberately, e.g. "email already
+    // registered" can't be checked client-side). This only adds a
+    // live hint while typing and a busy state on submit.
+
+    // Loading state: every submitting button gets a spinner and is
+    // disabled, which prevents an accidental double-submit (most
+    // important on POST /checkout, where a duplicate click could
+    // otherwise create two orders on a slow connection).
+    var loadingForms = document.querySelectorAll(".auth-form, .checkout-card > form");
+    for (var lfi = 0; lfi < loadingForms.length; lfi++) {
+        loadingForms[lfi].addEventListener("submit", function () {
+            var btn = this.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.classList.add("is-submitting");
+                btn.disabled = true;
+            }
+        });
+    }
+
+    // If the browser restores this page from bfcache (e.g. the user
+    // hits Back after a validation error redirected them here), any
+    // stuck spinner must clear — the page is interactive again.
+    window.addEventListener("pageshow", function (evt) {
+        if (!evt.persisted) return;
+        var stuck = document.querySelectorAll(".btn.is-submitting");
+        for (var si = 0; si < stuck.length; si++) {
+            stuck[si].classList.remove("is-submitting");
+            stuck[si].disabled = false;
+        }
+    });
+
+    // Inline validation hint: on blur, show the field's own validation
+    // message (empty / bad email / too short) beneath it. Re-checks on
+    // every keystroke only after a hint has been shown, so the message
+    // clears itself the moment the field becomes valid.
+    var validatedForms = document.querySelectorAll(".auth-form");
+    for (var vfi = 0; vfi < validatedForms.length; vfi++) {
+        var fields = validatedForms[vfi].querySelectorAll("input[required], input[minlength]");
+        for (var fi = 0; fi < fields.length; fi++) {
+            (function (field) {
+                var hint = document.createElement("span");
+                hint.className = "field-hint";
+                hint.setAttribute("aria-live", "polite");
+                field.insertAdjacentElement("afterend", hint);
+
+                function check() {
+                    var ok = field.checkValidity();
+                    hint.textContent = ok ? "" : field.validationMessage;
+                    hint.classList.toggle("is-shown", !ok);
+                    field.classList.toggle("is-error", !ok);
+                }
+                field.addEventListener("blur", check);
+                field.addEventListener("input", function () {
+                    if (hint.classList.contains("is-shown")) check();
+                });
+            })(fields[fi]);
+        }
+    }
 })();
