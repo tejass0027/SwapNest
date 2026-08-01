@@ -171,16 +171,15 @@ a:hover { color: var(--brand-dark); }
 .logo-mark {
     width: 30px;
     height: 30px;
-    border-radius: 8px;
-    background: var(--brand);
-    color: var(--brand-dark);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1;
+    flex-shrink: 0;
+    color: var(--brand-deep);
+}
+
+.logo-word { font-style: normal; }
+.logo-word-2 {
+    font-style: italic;
+    font-weight: 600;
+    color: var(--brand-deep);
 }
 
 .nav-links {
@@ -1553,11 +1552,6 @@ a:hover { color: var(--brand-dark); }
     font-weight: 600;
     color: var(--brand-dark);
     margin-bottom: var(--sp-12);
-}
-
-.auth-panel-logo .logo-mark {
-    background: var(--brand-dark);
-    color: #fff;
 }
 
 .auth-panel h2 {

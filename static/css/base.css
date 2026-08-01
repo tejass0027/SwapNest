@@ -113,17 +113,16 @@ a { color: var(--gold); text-decoration: none; }
 .logo-mark {
     width: 30px;
     height: 30px;
-    border-radius: 8px;
-    background: linear-gradient(150deg, var(--gold-bright), var(--gold-dim));
-    color: var(--on-accent);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-size: 17px;
+    flex-shrink: 0;
+    color: var(--gold);
+    filter: drop-shadow(0 0 6px rgba(216, 184, 122, 0.35));
+}
+
+.logo-word { font-style: normal; }
+.logo-word-2 {
+    font-style: italic;
     font-weight: 600;
-    line-height: 1;
-    box-shadow: var(--glow-gold);
+    color: var(--gold);
 }
 
 .nav-links {
