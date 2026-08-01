@@ -153,6 +153,46 @@ html.js [data-count] { font-variant-numeric: tabular-nums; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   RESTRAINED — dashboard / admin / messages
+   Fast micro-interactions only. Under 200ms, transform + border only.
+   No parallax, no pinning, no scroll reveals.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Row hover: quick horizontal nudge + category-tinted border + shadow.
+   Overrides the plain hover from components.css when motion.css is loaded. */
+.dash-row {
+    transition: transform var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                background var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+}
+.dash-row:hover {
+    transform: translateX(3px);
+    background: var(--surface-3);
+    border-color: color-mix(in srgb, var(--cat, var(--gold-line)) 50%, var(--line-2));
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+.dash-row:hover .dash-row-swatch {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cat, var(--gold)) 45%, transparent);
+    transition: box-shadow var(--dur-fast) var(--ease-out);
+}
+
+/* Message-inbox row (anchor) — same treatment, keep its own colour. */
+a.dash-msg { color: inherit; }
+
+/* Stat cards: tiny lift, gold hairline, soft shadow. */
+.stat-card {
+    transition: transform var(--dur-fast) var(--ease-out),
+                border-color var(--dur-fast) var(--ease-out),
+                box-shadow var(--dur-fast) var(--ease-out);
+}
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-line);
+    box-shadow: var(--shadow-2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
    BROWSE
    ═══════════════════════════════════════════════════════════════ */
 /* Chips share the .reveal system; the smaller offset keeps their

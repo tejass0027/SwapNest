@@ -7,15 +7,15 @@
 {# ── Stats ───────────────────────────────────────────────────── #}
 <div class="stat-grid">
     <div class="stat-card">
-        <div class="stat-value mono">{{ stats.users }}</div>
+        <div class="stat-value mono" data-count="{{ stats.users }}">{{ stats.users }}</div>
         <div class="stat-label label-upper">Users</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value mono">{{ stats.active_listings }}</div>
+        <div class="stat-value mono" data-count="{{ stats.active_listings }}">{{ stats.active_listings }}</div>
         <div class="stat-label label-upper">Active listings</div>
     </div>
     <div class="stat-card">
-        <div class="stat-value mono">{{ stats.orders }}</div>
+        <div class="stat-value mono" data-count="{{ stats.orders }}">{{ stats.orders }}</div>
         <div class="stat-label label-upper">Paid orders</div>
     </div>
     <div class="stat-card">

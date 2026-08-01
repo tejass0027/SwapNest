@@ -156,7 +156,14 @@
     }
 
     // ── Animated counters ──────────────────────────────────────
-    var counters = document.querySelectorAll("[data-count]");
+    // Dark mode only; the bright theme keeps the value static.
+    var counters = isDark() ? document.querySelectorAll("[data-count]") : [];
+    if (counters.length && !reduceMotion) {
+        // Blank the visible text so the count-up is observable. The
+        // original text is preserved in data-count and re-rendered by
+        // runCount(), and remains the no-JS / bright fallback.
+        for (var ci = 0; ci < counters.length; ci++) { counters[ci].textContent = "0"; }
+    }
     function runCount(el) {
         var target = parseFloat(el.getAttribute("data-count")) || 0;
         var prefix = el.getAttribute("data-count-prefix") || "";
