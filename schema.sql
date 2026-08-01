@@ -7,14 +7,15 @@ DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
-    id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    name          TEXT NOT NULL,
-    email         TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    is_admin      INTEGER NOT NULL DEFAULT 0,
-    is_verified   INTEGER NOT NULL DEFAULT 0,
-    bio           TEXT,
-    created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+    id                INTEGER PRIMARY KEY AUTOINCREMENT,
+    name              TEXT NOT NULL,
+    email             TEXT NOT NULL UNIQUE,
+    password_hash     TEXT NOT NULL,
+    is_admin          INTEGER NOT NULL DEFAULT 0,
+    is_verified       INTEGER NOT NULL DEFAULT 0,
+    bio               TEXT,
+    stripe_account_id TEXT,
+    created_at        TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE categories (

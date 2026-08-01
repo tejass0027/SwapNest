@@ -1,21 +1,13 @@
-import hashlib
-import hmac
-import json
-import time
-
-import requests
+import stripe
 from flask import (
     Blueprint, render_template, request, redirect, url_for, flash, g,
     current_app, abort,
 )
 
 from db import get_db
-from helpers import login_required, fee_breakdown
+from helpers import login_required, fee_breakdown, seller_payouts_ready
 
 bp = Blueprint("checkout", __name__)
-
-STRIPE_API = "https://api.stripe.com/v1/checkout/sessions"
-WEBHOOK_TOLERANCE_SECONDS = 300  # reject events older than 5 minutes
 
 
 def _load_active_listing_for_purchase(listing_id):
@@ -44,6 +36,11 @@ def _purchase_error(listing):
         return "This listing isn't available for purchase."
     if listing["seller_id"] == g.user["id"]:
         return "You can't buy your own listing."
+    # In demo mode nothing real is ever transferred, so a seller's Connect
+    # status is irrelevant. In live mode, block the purchase rather than
+    # take a buyer's money with nowhere real to send the seller's share.
+    if not current_app.config["DEMO_MODE"] and not seller_payouts_ready(listing["seller_id"]):
+        return "This seller hasn't finished setting up payouts yet. Check back soon."
     return None
 
 
@@ -101,33 +98,41 @@ def start(listing_id):
         _mark_order_paid(order_id)
         return redirect(url_for("checkout.success", order_id=order_id, demo=1))
 
-    # ── Live mode: hand off to Stripe Checkout. ──
+    # ── Live mode: hand off to Stripe Checkout, split at the source. ──
+    seller = db.execute(
+        "SELECT stripe_account_id FROM users WHERE id = ?", (listing["seller_id"],)
+    ).fetchone()
+    fee_percent = current_app.config["PLATFORM_FEE_PERCENT"]
+    fee_cents, _ = fee_breakdown(amount_cents, fee_percent)
+
     success_url = url_for("checkout.success", order_id=order_id, _external=True)
     success_url += "?session_id={CHECKOUT_SESSION_ID}"
     cancel_url = url_for("checkout.cancel", order_id=order_id, _external=True)
 
-    payload = {
-        "mode": "payment",
-        "success_url": success_url,
-        "cancel_url": cancel_url,
-        "client_reference_id": str(order_id),
-        "metadata[order_id]": str(order_id),
-        "line_items[0][quantity]": "1",
-        "line_items[0][price_data][currency]": currency,
-        "line_items[0][price_data][unit_amount]": str(amount_cents),
-        "line_items[0][price_data][product_data][name]": listing["title"],
-    }
-
     try:
-        resp = requests.post(
-            STRIPE_API,
-            data=payload,
-            auth=(current_app.config["STRIPE_SECRET_KEY"], ""),
-            timeout=20,
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            client_reference_id=str(order_id),
+            metadata={"order_id": str(order_id)},
+            line_items=[{
+                "quantity": 1,
+                "price_data": {
+                    "currency": currency,
+                    "unit_amount": amount_cents,
+                    "product_data": {"name": listing["title"]},
+                },
+            }],
+            # Destination charge: the full amount is charged to the buyer,
+            # Stripe keeps application_fee_amount for the platform and
+            # transfers the rest straight to the seller's connected account.
+            payment_intent_data={
+                "application_fee_amount": fee_cents,
+                "transfer_data": {"destination": seller["stripe_account_id"]},
+            },
         )
-        resp.raise_for_status()
-        session = resp.json()
-    except requests.RequestException:
+    except stripe.error.StripeError:
         db.execute("UPDATE orders SET status = 'cancelled' WHERE id = ?", (order_id,))
         db.commit()
         flash("We couldn't reach the payment provider. Please try again.", "error")
@@ -135,11 +140,11 @@ def start(listing_id):
 
     db.execute(
         "UPDATE orders SET stripe_session_id = ? WHERE id = ?",
-        (session.get("id"), order_id),
+        (session.id, order_id),
     )
     db.commit()
 
-    return redirect(session["url"])
+    return redirect(session.url)
 
 
 # ── Success / cancel ───────────────────────────────────────────
@@ -205,63 +210,27 @@ def _mark_order_paid(order_id):
 
 # ── Stripe webhook ─────────────────────────────────────────────
 
-def verify_stripe_signature(payload, sig_header, secret, now=None):
-    """Return True if the Stripe-Signature header validates against *payload*.
-
-    Implements Stripe's scheme: the header is `t=<ts>,v1=<hex hmac>,...`, and
-    the signed message is `<ts>.<raw body>` hashed with HMAC-SHA256. Rejects
-    missing parts, bad signatures, and timestamps outside the tolerance.
-    """
-    if not secret or not sig_header:
-        return False
-
-    parts = {}
-    for item in sig_header.split(","):
-        if "=" not in item:
-            continue
-        key, _, value = item.partition("=")
-        parts.setdefault(key, value)
-
-    timestamp = parts.get("t")
-    signature = parts.get("v1")
-    if not timestamp or not signature:
-        return False
-
-    try:
-        ts = int(timestamp)
-    except ValueError:
-        return False
-
-    now = int(time.time()) if now is None else now
-    if abs(now - ts) > WEBHOOK_TOLERANCE_SECONDS:
-        return False  # stale (or future-dated) event
-
-    signed = f"{timestamp}.{payload.decode('utf-8')}".encode("utf-8")
-    expected = hmac.new(secret.encode("utf-8"), signed, hashlib.sha256).hexdigest()
-    return hmac.compare_digest(expected, signature)
-
-
 @bp.route("/webhook/stripe", methods=("POST",))
 def webhook():
     payload = request.get_data()
     sig_header = request.headers.get("Stripe-Signature", "")
     secret = current_app.config["STRIPE_WEBHOOK_SECRET"]
 
-    if not verify_stripe_signature(payload, sig_header, secret):
-        # Never trust an unsigned or stale callback.
-        abort(400)
-
     try:
-        event = json.loads(payload)
-    except ValueError:
+        event = stripe.Webhook.construct_event(payload, sig_header, secret)
+    except (ValueError, stripe.error.SignatureVerificationError):
+        # Never trust an unparseable, unsigned, or stale callback.
         abort(400)
 
-    if event.get("type") == "checkout.session.completed":
-        session = event.get("data", {}).get("object", {})
-        order_id = (
-            session.get("metadata", {}).get("order_id")
-            or session.get("client_reference_id")
-        )
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        # Stripe's deserialized event objects are typed Session/StripeObject
+        # instances, not plain dicts — they support `in` and `[]` but have
+        # no .get(), so missing keys must be checked explicitly.
+        metadata = session["metadata"] if "metadata" in session else None
+        order_id = metadata["order_id"] if metadata and "order_id" in metadata else None
+        if not order_id and "client_reference_id" in session:
+            order_id = session["client_reference_id"]
         if order_id:
             try:
                 _mark_order_paid(int(order_id))

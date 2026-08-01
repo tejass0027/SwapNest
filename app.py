@@ -1,5 +1,6 @@
 import os
 
+import stripe
 from flask import Flask, g, session, render_template
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -18,6 +19,9 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[])
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    # Empty in demo mode — fine, since nothing calls the Stripe API then.
+    stripe.api_key = app.config["STRIPE_SECRET_KEY"]
 
     csrf.init_app(app)
     limiter.init_app(app)
@@ -47,6 +51,9 @@ def create_app():
 
     import dashboard
     app.register_blueprint(dashboard.bp)
+
+    import connect
+    app.register_blueprint(connect.bp)
 
     import admin
     app.register_blueprint(admin.bp)

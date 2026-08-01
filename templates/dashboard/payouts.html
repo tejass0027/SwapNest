@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Payouts — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="dash-header">
+    <h1 class="dash-title">Payouts</h1>
+    <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">Back to dashboard</a>
+</div>
+
+<section class="dash-section">
+    {% if demo_mode %}
+    <div class="dash-empty dash-empty-quiet">
+        <p>Stripe isn't configured for this deployment yet, so payouts aren't available. Set <code>STRIPE_SECRET_KEY</code> (test keys work, no business verification needed) to enable seller payouts.</p>
+    </div>
+
+    {% elif account and account.payouts_enabled %}
+    <div class="detail-seller-card">
+        <span class="badge badge-active">Connected</span>
+        <p class="detail-seller-bio">Your Stripe account is set up. When a buyer pays for one of your listings, your share is sent to you automatically — the platform fee is the only thing that stays behind.</p>
+    </div>
+
+    {% elif account %}
+    <div class="detail-seller-card">
+        <span class="badge badge-pending">Setup incomplete</span>
+        <p class="detail-seller-bio">You've started connecting Stripe, but there are a few more details Stripe needs before you can receive payouts. Buyers can't check out on your listings until this is finished.</p>
+        <form method="post" action="{{ url_for('connect.start') }}" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-primary">Finish setup</button>
+        </form>
+    </div>
+
+    {% else %}
+    <div class="dash-empty">
+        <span class="empty-icon" aria-hidden="true">&#128179;</span>
+        <p>Connect a Stripe account so buyers' payments come straight to you — minus the platform fee — the moment they pay. Buyers can't check out on your listings until this is set up.</p>
+        <form method="post" action="{{ url_for('connect.start') }}" class="inline-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-primary">Connect with Stripe</button>
+        </form>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

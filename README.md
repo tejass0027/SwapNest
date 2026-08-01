@@ -96,6 +96,18 @@ export STRIPE_PUBLISHABLE_KEY=pk_test_...
 
 Use Stripe **test** keys first. Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
 
+### Seller payouts (Stripe Connect)
+
+Outside demo mode, checkout uses **destination charges**: the buyer's full payment goes to your platform account, and Stripe automatically transfers the seller's share (minus `PLATFORM_FEE_PERCENT`) to the seller's own connected account — you never manually move money.
+
+This means a seller can't be paid until they've connected a Stripe account:
+
+- Sellers connect from **Dashboard → Payouts** (`/dashboard/payouts`), which walks them through Stripe's own hosted onboarding (a Stripe Express account).
+- Checkout is **blocked server-side** for any listing whose seller hasn't finished onboarding — a buyer sees "This seller hasn't finished setting up payouts yet," never a payment with nowhere real to send the seller's cut.
+- In demo mode, none of this applies — no real money moves either way, so payout status is irrelevant.
+
+Connect requires the same `STRIPE_SECRET_KEY` as checkout — test keys exercise the whole onboarding flow (Stripe's test mode ships fake identity/bank details for exactly this) with no business verification needed. Going live for real requires completing Stripe's own business verification for your platform account, separately from anything in this codebase.
+
 ---
 
 ## Project structure
@@ -112,6 +124,7 @@ swapnest/
 ├── listings.py          # Browse, search, detail, create, edit
 ├── dashboard.py         # Seller and buyer dashboards
 ├── checkout.py          # Order creation, Stripe session, webhooks
+├── connect.py           # Seller Stripe Connect onboarding (payouts)
 ├── admin.py             # Review queue for account listings
 ├── templates/           # Jinja2 templates
 └── static/
@@ -124,7 +137,7 @@ swapnest/
 
 ## Data model
 
-- **users** — name, email, password hash, admin flag, verification flag
+- **users** — name, email, password hash, admin flag, verification flag, Stripe Connect account id
 - **categories** — grouped into `digital` and `social_account`
 - **listings** — seller, category, price in cents, metrics, delivery method, status
 - **orders** — listing, buyer, seller, amount, status, Stripe session ID
