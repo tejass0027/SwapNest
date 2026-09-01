@@ -1,198 +1,46 @@
 # SwapNest — Digital Assets Marketplace
 
-A marketplace where people list and sell digital assets: SaaS products, mobile apps, websites and domains, code templates, digital services — and, optionally, social media accounts (YouTube, Instagram, TikTok, X, Facebook).
+SwapNest is a marketplace for buying and selling digital assets: SaaS products, mobile apps, websites and domains, code templates, and digital services — and, where enabled, social media accounts (YouTube, Instagram, TikTok, X, Facebook).
 
-Buyers browse, filter, message sellers, and pay through Stripe Checkout. Sellers create listings, track orders, and hand over the asset after payment clears.
-
----
-
-## Status
-
-Feature-complete build covering the spec in `CLAUDE_CODE_PROMPT.md`: auth, listing browse/search/detail/create/edit, Stripe checkout (with a demo mode that needs no payment provider configured), seller/buyer dashboards, an admin review queue for account listings, and buyer↔seller messaging. CSRF protection and rate limiting are wired in — see the security checklist below for what's still worth doing before real traffic.
-
-The UI ships with two themes — a dark "luxury" default and the original light theme, switchable from the nav — plus tiered scroll motion: full showcase treatment on the home/browse/listing pages, restrained micro-interactions on the dashboard and admin, and instant/minimal on auth and checkout.
+Buyers browse listings, message sellers with questions, and pay securely through Stripe. Sellers list what they're selling, talk to interested buyers, and get paid directly once something sells.
 
 ---
 
-## Tech stack
+## Buying
 
-| Layer | Choice | Why |
-|---|---|---|
-| Backend | Flask (Python 3.12) | Small, readable, easy to host anywhere |
-| Database | SQLite | Zero setup; swap to Postgres later via SQLAlchemy |
-| Templates | Jinja2, server-rendered | No build step, fast to iterate |
-| Styling | Hand-written CSS, custom properties | Full control, no framework bloat |
-| Payments | Stripe Checkout (hosted) | Card data never touches your server |
-| Auth | Werkzeug password hashing + Flask sessions | Built in, no extra dependency |
-| CSRF | Flask-WTF | One token, every state-changing form |
-| Rate limiting | Flask-Limiter | Blunt but effective on login/register |
+**Browse and search** — Use Browse to see everything for sale, filter by category, search by keyword, and sort by price or newest. Each listing shows the price, category, and a quick stat about the asset — monthly revenue, subscriber count, and so on.
 
-No Node build step. No bundler. `pip install -r requirements.txt` and run.
+**Check the details** — Open a listing for the full description, the delivery method (how you'll receive the asset after paying), and who's selling it. A verified badge means the seller has been checked.
+
+**Ask before you buy** — Every listing has a message thread. Ask the seller anything before committing. You'll need an account to message, but not to browse.
+
+**Buy** — When you're ready, hit Buy. You'll see the full price breakdown, including any platform fee, before you pay. Payment is handled by Stripe — SwapNest never sees or stores your card details. If the site is running in demo mode, you'll see a clear "Demo" badge and the purchase completes instantly with no real charge.
+
+**After you buy** — Your order appears on your Dashboard along with the delivery method, so you know what to expect from the seller next.
 
 ---
 
-## Getting started
+## Selling
 
-```bash
-# 1. Clone and enter the project
-cd swapnest
+**List an asset** — From your Dashboard, choose "List an asset." Add a title, description, price, and — where it helps buyers judge the asset — a stat like monthly recurring revenue or subscriber count.
 
-# 2. Create a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+- Most categories (SaaS, apps, websites, templates, services) go live immediately.
+- Social media account listings go into a review queue first — an admin checks them before they're published, since account transfers carry real risk (see below).
 
-# 3. Install dependencies
-pip install -r requirements.txt
+**Get paid** — Before anyone can buy from you, connect a Stripe account from Dashboard → Payouts. Once connected, your share of every sale is sent to you automatically — SwapNest keeps a small platform fee, shown transparently at checkout, and the rest goes straight to you. Buyers can't check out on your listings until this is set up.
 
-# 4. Create the database and load demo data
-python seed.py
+**Manage your listings** — Edit or remove any active listing from your Dashboard, see who's messaged you about it, and track every order — what sold, to whom, and for how much.
 
-# 5. Run
-python app.py
-```
-
-Open <http://localhost:5000>.
-
-### Demo accounts
-
-Created by `seed.py`:
-
-| Email | Password | Role |
-|---|---|---|
-| `admin@ledger.test` | `admin123` | Admin — can approve/reject account listings |
-| `alex@ledger.test` | `password123` | Seller (verified) |
-| `sam@ledger.test` | `password123` | Seller (unverified) |
-| `priya@ledger.test` | `password123` | Seller (verified) |
-
-Change these before deploying anywhere public.
+**Talk to buyers** — Answer questions on any listing's message thread, before or after a sale.
 
 ---
 
-## Configuration
+## A note on social media accounts
 
-All config lives in `config.py` and reads from environment variables.
-
-| Variable | Default | What it does |
-|---|---|---|
-| `SECRET_KEY` | `dev-secret-change-me` | Flask session signing key. **Must** be changed in production. |
-| `DATABASE_PATH` | `./marketplace.db` | SQLite file location |
-| `STRIPE_SECRET_KEY` | *(empty)* | Stripe secret key. If empty, app runs in **demo mode**. |
-| `STRIPE_PUBLISHABLE_KEY` | *(empty)* | Stripe publishable key |
-| `PLATFORM_FEE_PERCENT` | `5` | Marketplace cut, shown transparently at checkout |
-| `ENABLE_SOCIAL_ACCOUNTS` | `true` | Set to `false` to hide the social-account category group entirely |
-| `SITE_NAME` | `SwapNest` | Display name used across the UI |
-| `SESSION_COOKIE_SECURE` | `false` | Set to `true` once served over HTTPS. Left `false` by default — browsers silently drop `Secure` cookies on plain `http://`, which would otherwise break every login in local dev |
-
-### Demo mode
-
-With no `STRIPE_SECRET_KEY` set, purchases complete instantly without contacting Stripe. This lets you click through the entire buy flow before setting up a payment account. The checkout page shows a clear demo badge so it can't be mistaken for a real charge.
-
-To go live:
-
-```bash
-export STRIPE_SECRET_KEY=sk_test_...
-export STRIPE_PUBLISHABLE_KEY=pk_test_...
-```
-
-Use Stripe **test** keys first. Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
-
-### Seller payouts (Stripe Connect)
-
-Outside demo mode, checkout uses **destination charges**: the buyer's full payment goes to your platform account, and Stripe automatically transfers the seller's share (minus `PLATFORM_FEE_PERCENT`) to the seller's own connected account — you never manually move money.
-
-This means a seller can't be paid until they've connected a Stripe account:
-
-- Sellers connect from **Dashboard → Payouts** (`/dashboard/payouts`), which walks them through Stripe's own hosted onboarding (a Stripe Express account).
-- Checkout is **blocked server-side** for any listing whose seller hasn't finished onboarding — a buyer sees "This seller hasn't finished setting up payouts yet," never a payment with nowhere real to send the seller's cut.
-- In demo mode, none of this applies — no real money moves either way, so payout status is irrelevant.
-
-Connect requires the same `STRIPE_SECRET_KEY` as checkout — test keys exercise the whole onboarding flow (Stripe's test mode ships fake identity/bank details for exactly this) with no business verification needed. Going live for real requires completing Stripe's own business verification for your platform account, separately from anything in this codebase.
+Transferring a social media account can violate that platform's own terms of service, and accounts can be reclaimed or banned after the sale, leaving the buyer with nothing. If you're buying or selling in this category, do your own homework first — check the seller's verification status, ask questions before paying, and understand that SwapNest facilitates the transaction but can't guarantee the platform (YouTube, Instagram, etc.) will honor it.
 
 ---
 
-## Project structure
+## Your account
 
-```
-swapnest/
-├── app.py               # Application factory, blueprint registration
-├── config.py            # Configuration and feature flags
-├── db.py                # SQLite connection handling
-├── schema.sql           # Database schema
-├── seed.py              # Creates DB + demo data
-├── helpers.py           # Auth decorators, formatting, Stripe calls
-├── auth.py              # Register, log in, log out
-├── listings.py          # Browse, search, detail, create, edit
-├── dashboard.py         # Seller and buyer dashboards
-├── checkout.py          # Order creation, Stripe session, webhooks
-├── connect.py           # Seller Stripe Connect onboarding (payouts)
-├── admin.py             # Review queue for account listings
-├── templates/           # Jinja2 templates
-└── static/
-    ├── css/
-    ├── js/
-    └── img/
-```
-
----
-
-## Data model
-
-- **users** — name, email, password hash, admin flag, verification flag, Stripe Connect account id
-- **categories** — grouped into `digital` and `social_account`
-- **listings** — seller, category, price in cents, metrics, delivery method, status
-- **orders** — listing, buyer, seller, amount, status, Stripe session ID
-- **messages** — buyer/seller conversation attached to a listing
-
-Prices are stored as **integer cents**, never floats.
-
-Listing statuses: `draft` → `pending_review` (social accounts only) → `active` → `sold` / `removed`.
-
----
-
-## Important: social media account listings
-
-Selling or transferring account ownership violates the terms of service of most major platforms — YouTube, Instagram, TikTok, X, and Facebook all prohibit it in some form. Accounts can be reclaimed or banned after transfer, leaving your buyer with nothing and your marketplace holding the dispute.
-
-This category is also the single biggest fraud vector in this kind of business: stolen accounts, bot-inflated follower counts, and sellers who take payment and reclaim the account through the platform's own recovery flow.
-
-The scaffold reflects that:
-
-- The category group is behind a flag (`ENABLE_SOCIAL_ACCOUNTS`) so you can ship without it
-- Account listings go to `pending_review` instead of publishing immediately
-- Sellers must tick an ownership/eligibility attestation before submitting
-- An admin queue exists to approve or reject before anything goes live
-
-If you keep this category, you'll want, at minimum: real seller identity verification, funds held until the buyer confirms transfer (escrow), a written dispute process, and terms that make the seller liable for reclaimed accounts. Talk to a lawyer in your jurisdiction before taking real money — marketplace liability, payment regulations, and consumer protection rules vary a lot, and holding funds in escrow can trigger money-transmission licensing requirements in some places.
-
-The general digital-assets categories carry none of this baggage and are a larger market anyway.
-
----
-
-## Security checklist before going live
-
-- [ ] Change `SECRET_KEY` to a long random value
-- [ ] Change or delete all seeded demo accounts
-- [x] Set `SESSION_COOKIE_SECURE=true` and serve over HTTPS — the flag exists in `config.py` and defaults to `false` so local `http://` dev keeps working; flip it once you're behind HTTPS. `HttpOnly` and `SameSite=Lax` are already on unconditionally.
-- [x] CSRF protection on every form (`Flask-WTF`) — every state-changing form carries a token; requests without one get a 400. The Stripe webhook is explicitly exempted since it's a signed server-to-server callback, not a browser form.
-- [x] Rate limiting on login and registration (`Flask-Limiter`) — 10/min and 5/min per IP, counting only POST attempts. Uses in-memory storage: fine for a single worker, but move to a shared backend (e.g. Redis) once you run more than one process. Note: Flask's `debug=True` auto-reloader can prevent the in-memory counter from enforcing correctly during local dev on some platforms — this doesn't affect a real deployment behind gunicorn/waitress, which never uses that reloader.
-- [x] Verify Stripe webhook signatures — `checkout.py` rejects unsigned, tampered, or stale (>5 min) callbacks.
-- [ ] Validate and re-encode uploaded images; serve them off a separate domain or CDN
-- [x] Escape all user-supplied content — Jinja2 autoescapes by default, and nothing in the codebase uses `|safe` on user input.
-- [ ] Move from SQLite to Postgres before you have real traffic
-
----
-
-## Roadmap
-
-- [ ] Escrow: hold funds until buyer confirms delivery
-- [ ] Seller identity verification (Stripe Identity)
-- [ ] Ratings and reviews after completed orders
-- [ ] Saved searches and email alerts
-- [ ] Analytics for sellers (views, conversion)
-- [ ] Dispute resolution flow
-
----
-
-## License
-
-Choose one before publishing. MIT is a reasonable default for a project you may open-source.
+Sign up with your name, email, and a password. From your profile, update your display name and bio — both are shown to anyone viewing your listings.
